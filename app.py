@@ -177,36 +177,42 @@ def show_modern_clock(target_hour_float):
     }})();
     </script>
 
-    <style>
-    .clock-container {{
-        background-color: #0e1117;
-        border: 1px solid #ff4b4b;
-        border-radius: 8px;
-        padding: 12px;
-        text-align: center;
-        margin-bottom: 12px;
-        box-shadow: 0 0 8px rgba(255, 75, 75, 0.12);
-    }}
-    .clock-label {{
-        color: #aaa;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1.6px;
-        margin-bottom: 4px;
-    }}
-    .clock-time {{
-        font-family: 'Courier New', monospace;
-        font-size: 1.9rem;
-        font-weight: 700;
-        color: #ff4b4b;
-        text-shadow: 0 0 6px rgba(255, 75, 75, 0.35);
-    }}
-    .clock-target {{
-        color: #666;
-        font-size: 0.85rem;
-        margin-top: 6px;
-    }}
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+.clock-container {
+    background-color: #0e1117;
+    border: 1px solid #ff4b4b;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 12px;
+    box-shadow: 0 0 8px rgba(255, 75, 75, 0.12);
+    font-family: 'Poppins', sans-serif;
+}
+.clock-label {
+    color: #aaa;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    margin-bottom: 4px;
+    font-family: 'Poppins', sans-serif;
+}
+.clock-time {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #ff4b4b;
+    text-shadow: 0 0 6px rgba(255, 75, 75, 0.35);
+    font-family: 'Poppins', sans-serif;
+}
+.clock-target {
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    font-family: 'Poppins', sans-serif;
+}
+</style>
+
     """
 
     # Renderizar dentro de la barra lateral
