@@ -191,7 +191,7 @@ with tab1:
 
     # Pantallas de descanso
     if target_type in ["gym", "break", "sleep", "free"] and not force_study:
-        st.balloons()
+        #st.balloons()
         st.success(f"🚫 **TIEMPO DE DESCANSO / GYM**")
         st.markdown(f"### Toca: {block_name}")
         st.info("Recuerda: El descanso es parte del entrenamiento. Desconecta para rendir luego.")
