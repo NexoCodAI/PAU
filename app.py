@@ -102,60 +102,159 @@ def save_data(data):
         json.dump(data, f, indent=4)
 
 # ==========================================
-# 4. LÓGICA DE HORARIO (PDF STRICT COMPLIANCE)
+# 4. FUNCIONES VISUALES (RELOJ)
+# ==========================================
+
+def show_modern_clock(target_hour_float):
+    """
+    Muestra una cuenta atrás JS visualmente atractiva hasta la hora decimal indicada.
+    """
+    if target_hour_float == 0:
+        return # No mostrar reloj en tiempo libre
+
+    # Convertir hora decimal (ej. 17.5) a horas y minutos (17:30)
+    th = int(target_hour_float)
+    tm = int((target_hour_float - th) * 60)
+
+    # HTML y JS inyectado para el reloj
+    clock_html = f"""
+    <div class="clock-container">
+        <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
+        <div id="countdown" class="clock-time">--:--:--</div>
+        <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
+    </div>
+
+    <script>
+    (function() {{
+        var targetHour = {th};
+        var targetMin = {tm};
+        
+        function updateTimer() {{
+            var now = new Date();
+            var target = new Date();
+            target.setHours(targetHour, targetMin, 0, 0);
+            
+            // Si la hora objetivo es mañana (ej. madrugada), ajustar fecha (opcional, aquí asumimos mismo día)
+            
+            var diff = target - now;
+            
+            if (diff <= 0) {{
+                var el = document.getElementById("countdown");
+                if(el) {{
+                    el.innerHTML = "00:00:00";
+                    el.style.color = "#555";
+                }}
+                return;
+            }}
+            
+            var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            
+            var el = document.getElementById("countdown");
+            if(el) el.innerHTML = hours + ":" + minutes + ":" + seconds;
+        }}
+        
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    }})();
+    </script>
+    
+    <style>
+    .clock-container {{
+        background-color: #0e1117;
+        border: 1px solid #ff4b4b;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(255, 75, 75, 0.15);
+    }}
+    .clock-label {{
+        color: #aaa;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 5px;
+    }}
+    .clock-time {{
+        font-family: 'Courier New', monospace;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #ff4b4b;
+        text-shadow: 0 0 8px rgba(255, 75, 75, 0.4);
+    }}
+    .clock-target {{
+        color: #666;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }}
+    </style>
+    """
+    st.sidebar.markdown(clock_html, unsafe_allow_html=True)
+
+# ==========================================
+# 5. LÓGICA DE HORARIO (CORREGIDA & UPDATED)
 # ==========================================
 
 def get_current_block():
     """
     Define qué toca estudiar según el día y la hora.
     Basado estrictamente en las tablas del PDF.
+    Devuelve: tipo, nombre, duración, hora_fin (decimal)
     """
-
+    
+    # --- CORRECCIÓN ZONA HORARIA ---
     madrid_tz = pytz.timezone('Europe/Madrid')
     now = datetime.datetime.now(madrid_tz) 
+    # -------------------------------
 
     weekday = now.weekday() # 0=Lunes ... 6=Domingo
     hour = now.hour + now.minute / 60.0
 
-    # MIÉRCOLES (2) [cite: 11]
+    # MIÉRCOLES (2)
     if weekday in [2]:
-        if 16.0 <= hour < 17.5: return "science", "🔄 Tareas diarias", 90
-        if 17.5 <= hour < 19.0: return "gym", "🏋️ Gimnasio / Reset", 90
-        if 19.0 <= hour < 20.5: return "science", "🧪 Bloque Ciencia", 90
-        if 20.5 <= hour < 21.0: return "break", "🚿 Ducha", 30
-        if 21.0 <= hour < 21.5: return "break", "🥗 Cena (Sin Pantallas)", 30
-        if 21.5 <= hour < 23.0: return "memory", "🧠 Bloque Memoria (Gold)", 90
-        if hour > 23.0: return "sleep", "😴 DORMIR (Sagrado)", 0
+        if 16.0 <= hour < 17.5: return "science", "🔄 Tareas diarias", 90, 17.5
+        if 17.5 <= hour < 19.0: return "gym", "🏋️ Gimnasio / Reset", 90, 19.0
+        if 19.0 <= hour < 20.5: return "science", "🧪 Bloque Ciencia", 90, 20.5
+        if 20.5 <= hour < 21.0: return "break", "🚿 Ducha", 30, 21.0
+        if 21.0 <= hour < 21.5: return "break", "🥗 Cena (Sin Pantallas)", 30, 21.5
+        if 21.5 <= hour < 23.0: return "memory", "🧠 Bloque Memoria (Gold)", 90, 23.0
+        if hour > 23.0: return "sleep", "😴 DORMIR (Sagrado)", 0, 0
 
     # LUNES (0), MARTES (1) Y JUEVES (3) 
     elif weekday in [0, 1, 3]:
         # ¡OJO! Aquí es donde estaba tu problema. Martes empieza 15:30.
-        if 15.5 <= hour < 17.0: return "science", "🔄 Tareas diarias", 90
-        if 17.0 <= hour < 18.5: return "gym", "🏋️ Gimnasio / Reset", 90
-        if 18.5 <= hour < 20.0: return "science", "🧪 Bloque Ciencia", 90
-        if 20.0 <= hour < 20.5: return "mix", "Buffer / Inglés/ Tareas diarias", 30
-        if 20.5 <= hour < 21.0: return "break", "Ducha", 30
-        if 21.0 <= hour < 21.5: return "break", "🥗 Cena", 30
-        if 21.5 <= hour < 23.0: return "memory", "🧠 Bloque Memoria (Gold)", 90
-        if hour >= 23.0: return "sleep", "😴 DORMIR (Sagrado)", 0
+        if 15.5 <= hour < 17.0: return "science", "🔄 Tareas diarias", 90, 17.0
+        if 17.0 <= hour < 18.5: return "gym", "🏋️ Gimnasio / Reset", 90, 18.5
+        if 18.5 <= hour < 20.0: return "science", "🧪 Bloque Ciencia", 90, 20.0
+        if 20.0 <= hour < 20.5: return "mix", "Buffer / Inglés/ Tareas diarias", 30, 20.5
+        if 20.5 <= hour < 21.0: return "break", "Ducha", 30, 21.0
+        if 21.0 <= hour < 21.5: return "break", "🥗 Cena", 30, 21.5
+        if 21.5 <= hour < 23.0: return "memory", "🧠 Bloque Memoria (Gold)", 90, 23.0
+        if hour >= 23.0: return "sleep", "😴 DORMIR (Sagrado)", 0, 0
 
     # VIERNES (4) - Buffer y Repaso
     elif weekday == 4:
-        if 16.0 <= hour < 20.0: return "mix", "🔄 Repaso Buffer/ Tareas / Inglés", 240
+        if 16.0 <= hour < 20.0: return "mix", "🔄 Repaso Buffer/ Tareas / Inglés", 240, 20.0
     
-    # SÁBADO (5) - Simulacro [cite: 24]
+    # SÁBADO (5) - Simulacro
     elif weekday == 5:
-        if 9.5 <= hour < 13.5: return "simulacro", "📝 SIMULACRO REAL EXAMEN", 240
-        if hour >= 14.0: return "free", "🎉 Tarde Libre", 0
+        if 9.5 <= hour < 13.5: return "simulacro", "📝 SIMULACRO REAL EXAMEN", 240, 13.5
+        if hour >= 14.0: return "free", "🎉 Tarde Libre", 0, 0
     
-    # DOMINGO (6) - Planificación [cite: 29]
+    # DOMINGO (6) - Planificación
     elif weekday == 6:
-        if 18.0 <= hour < 20.0: return "review", "📅 Planificación + Cuaderno Errores", 120
+        if 18.0 <= hour < 20.0: return "review", "📅 Planificación + Cuaderno Errores", 120, 20.0
 
-    return "free", "⏳ Tiempo Libre / Buffer", 0
+    return "free", "⏳ Tiempo Libre / Buffer", 0, 0
 
 # ==========================================
-# 5. INTERFAZ Y LÓGICA PRINCIPAL
+# 6. INTERFAZ Y LÓGICA PRINCIPAL
 # ==========================================
 
 # Cargar estado
@@ -163,11 +262,16 @@ if 'data' not in st.session_state:
     st.session_state.data = load_data()
 
 data = st.session_state.data
-real_type, block_name, duration = get_current_block()
+# Recuperamos los 4 valores (incluyendo la hora de fin para el reloj)
+real_type, block_name, duration, end_hour = get_current_block()
 
 # --- SIDEBAR ---
 with st.sidebar:
     st.title("PAU TRACKER")
+    
+    # RELOJ MODERNO INTEGRADO
+    show_modern_clock(end_hour)
+    
     st.markdown("### Estado Actual")
     
     # Checkbox para saltarse el descanso si es necesario
@@ -206,10 +310,10 @@ with tab1:
     if target_type in ["gym", "break", "sleep", "free"]:
         st.success(f"🛑 **STOP.** Toca recuperar energía.")
         st.markdown(f"### Actividad: {block_name}")
-        st.markdown("> *El descanso es parte del entrenamiento. Desconecta para rendir luego.* [cite: 1, 5]")
+        st.markdown("> *El descanso es parte del entrenamiento. Desconecta para rendir luego.*")
     
     elif target_type == "review":
-        st.info("📅 **Domingo:** Revisa la pestaña '📓 Errores' y planifica la semana[cite: 29].")
+        st.info("📅 **Domingo:** Revisa la pestaña '📓 Errores' y planifica la semana.")
 
     else:
         # 1. FILTRADO DE TAREAS
@@ -290,7 +394,7 @@ with tab1:
                         badges = []
                         if topic["extra_queue"]: badges.append("🔥 URGENTE")
                         if t["days_overdue"] > 5: badges.append("💀 RETRASADO")
-                        if topic["level"] < 2: badges.append("🐸 DIFÍCIL") # Eat the frog [cite: 11]
+                        if topic["level"] < 2: badges.append("🐸 DIFÍCIL") # Eat the frog
                         
                         st.caption(f"{' '.join(badges)} • {subj}")
                         st.subheader(topic["name"])
@@ -327,7 +431,7 @@ with tab1:
                             save_data(st.session_state.data)
                             st.rerun()
                     
-                    # Si falló, pedir detalle para el Cuaderno de Errores [cite: 20]
+                    # Si falló, pedir detalle para el Cuaderno de Errores
                     if st.session_state.get(f"fail_{subj}_{idx}", False):
                         with st.form(key=f"frm_{subj}_{idx}"):
                             st.markdown("📉 **Registro de Fallo**")
@@ -389,7 +493,7 @@ with tab2:
                         st.rerun()
 
 # ==========================================
-# TAB 3: CUADERNO DE ERRORES [cite: 20]
+# TAB 3: CUADERNO DE ERRORES
 # ==========================================
 with tab3:
     st.header("📓 Cuaderno de Errores")
