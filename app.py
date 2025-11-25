@@ -106,112 +106,86 @@ def save_data(data):
 # 4. FUNCIONES VISUALES (RELOJ)
 # ==========================================
 
-def show_modern_clock(target_hour_float):
-    """
-    Muestra una cuenta atrás hasta la hora decimal indicada en la barra lateral de Streamlit.
-    Usa st.components.v1.html para que el JS se ejecute de forma fiable.
-    """
-    if target_hour_float == 0:
-        return  # No mostrar reloj en tiempo libre
+import time
+import streamlit as st
 
-    # Convertir hora decimal (ej. 17.5) a horas y minutos (17:30)
+def show_simple_clock(target_hour_float):
+    if target_hour_float == 0:
+        return
+    
     th = int(target_hour_float)
     tm = int(round((target_hour_float - th) * 60))
+    uid = f"clock_{int(time.time()*1000)}"
 
-    # ID único para evitar colisiones
-    unique_id = f"clock_val_{int(time.time() * 1000)}"
+    html = f"""
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-    clock_html = f"""
-    <div class="clock-container">
+    <div class="clock-box">
         <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
-        <div id="{unique_id}" class="clock-time">--:--:--</div>
+        <div id="{uid}" class="clock-time">--:--:--</div>
         <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
     </div>
 
     <script>
-    (function() {{
-        const elementId = "{unique_id}";
+        const el = document.getElementById("{uid}");
 
-        function pad(n) {{
-            return n < 10 ? "0" + n : n;
-        }}
-
-        function computeAndFormat() {{
-            const el = document.getElementById(elementId);
-            if (!el) return null;
-
+        function tick() {{
             const now = new Date();
             const target = new Date();
             target.setHours({th}, {tm}, 0, 0);
 
             let diff = target - now;
 
-            // Si ya pasó, mostramos 00:00:00 (si prefieres contar al día siguiente,
-            // sustituye estas líneas por: if (diff <= 0) {{ target.setDate(target.getDate()+1); diff = target - now; }})
             if (diff <= 0) {{
-                el.innerText = "00:00:00";
-                el.style.color = "#555";
+                el.innerHTML = "00:00:00";
                 return;
             }}
 
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+            const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+            const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
 
-            el.innerText = pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
+            el.innerHTML = h + ":" + m + ":" + s;
         }}
 
-        // Intento rápido por si el elemento ya está listo
-        computeAndFormat();
-
-        // Re-intentar hasta que el elemento exista (evita problemas por el orden de renderizado en Streamlit)
-        const findInterval = setInterval(function() {{
-            const el = document.getElementById(elementId);
-            if (el) {{
-                clearInterval(findInterval);
-                computeAndFormat();
-                // Actualizamos cada segundo
-                setInterval(computeAndFormat, 1000);
-            }}
-        }}, 150);
-    }})();
+        tick();
+        setInterval(tick, 1000);
     </script>
 
- <style>
-    .clock-container {{
-        background-color: #0e1117;
-        border: 1px solid #ff4b4b;
-        border-radius: 8px;
-        padding: 12px;
-        text-align: center;
-        margin-bottom: 12px;
-        box-shadow: 0 0 8px rgba(255, 75, 75, 0.12);
-    }}
-    .clock-label {{
-        color: #aaa;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1.6px;
-        margin-bottom: 4px;
-    }}
-    .clock-time {{
-        font-family: 'Courier New', monospace;
-        font-size: 1.9rem;
-        font-weight: 700;
-        color: #ff4b4b;
-        text-shadow: 0 0 6px rgba(255, 75, 75, 0.35);
-    }}
-    .clock-target {{
-        color: #666;
-        font-size: 0.85rem;
-        margin-top: 6px;
-    }}
+    <style>
+        .clock-box {{
+            font-family: 'Poppins', sans-serif;
+            background-color: #11141c;
+            border: 2px solid #ff4b4b;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }}
+        .clock-label {{
+            color: #ccc;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }}
+        .clock-time {{
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #ff4b4b;
+            text-shadow: 0 0 8px rgba(255,75,75,0.4);
+        }}
+        .clock-target {{
+            color: #888;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }}
     </style>
-  """
-    # Renderizar dentro de la barra lateral
-    with st.sidebar:
-        # Ajusta la altura si necesitas más/menos espacio
-        components_html(clock_html, height=120, scrolling=False)
+    """
+
+    st.sidebar.markdown(html, unsafe_allow_html=True)
+
 
 
 # ==========================================
