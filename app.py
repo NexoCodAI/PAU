@@ -4,6 +4,7 @@ import datetime
 import os
 import time
 import pytz
+from streamlit.components.v1 import html as components_html
 
 # ==========================================
 # 1. CONFIGURACIÓN Y ESTILO
@@ -107,24 +108,19 @@ def save_data(data):
 
 def show_modern_clock(target_hour_float):
     """
-    Muestra una cuenta atrás JS visualmente atractiva hasta la hora decimal indicada.
-    Versión robusta: Busca el elemento activamente para evitar el error --:--:--
+    Muestra una cuenta atrás hasta la hora decimal indicada en la barra lateral de Streamlit.
+    Usa st.components.v1.html para que el JS se ejecute de forma fiable.
     """
     if target_hour_float == 0:
-        return # No mostrar reloj en tiempo libre
+        return  # No mostrar reloj en tiempo libre
 
     # Convertir hora decimal (ej. 17.5) a horas y minutos (17:30)
     th = int(target_hour_float)
-    tm = int((target_hour_float - th) * 60)
-    
-    # Generamos un ID único basado en el tiempo para evitar conflictos en el navegador
-    # Necesitamos importar time si no está importado globalmente, pero asumimos que sí por el contexto.
-    unique_id = f"clock_val_{int(time.time()*1000)}"
+    tm = int(round((target_hour_float - th) * 60))
 
-    # HTML y JS inyectado
-    # IMPORTANTE: Usamos f-string con triple comilla.
-    # Las llaves de Python {var} se reemplazan.
-    # Las llaves de JS/CSS deben ser dobles {{...}} para que Python no las confunda.
+    # ID único para evitar colisiones
+    unique_id = f"clock_val_{int(time.time() * 1000)}"
+
     clock_html = f"""
     <div class="clock-container">
         <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
@@ -134,80 +130,90 @@ def show_modern_clock(target_hour_float):
 
     <script>
     (function() {{
-        var targetHour = {th};
-        var targetMin = {tm};
-        var elementId = "{unique_id}";
-        
-        function updateTimer() {{
-            var el = document.getElementById(elementId);
-            
-            // Si el elemento aún no existe en el DOM, no hacemos nada y esperamos al siguiente ciclo
-            if (!el) return;
-            
-            var now = new Date();
-            var target = new Date();
-            target.setHours(targetHour, targetMin, 0, 0);
-            
-            var diff = target - now;
-            
+        const elementId = "{unique_id}";
+
+        function pad(n) {{
+            return n < 10 ? "0" + n : n;
+        }}
+
+        function computeAndFormat() {{
+            const el = document.getElementById(elementId);
+            if (!el) return null;
+
+            const now = new Date();
+            const target = new Date();
+            target.setHours({th}, {tm}, 0, 0);
+
+            let diff = target - now;
+
+            // Si ya pasó, mostramos 00:00:00 (si prefieres contar al día siguiente,
+            // sustituye estas líneas por: if (diff <= 0) {{ target.setDate(target.getDate()+1); diff = target - now; }})
             if (diff <= 0) {{
-                el.innerHTML = "00:00:00";
+                el.innerText = "00:00:00";
                 el.style.color = "#555";
                 return;
             }}
-            
-            var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            hours = (hours < 10) ? "0" + hours : hours;
-            minutes = (minutes < 10) ? "0" + minutes : minutes;
-            seconds = (seconds < 10) ? "0" + seconds : seconds;
-            
-            el.innerHTML = hours + ":" + minutes + ":" + seconds;
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            el.innerText = pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
         }}
-        
-        // Ejecutar cada segundo
-        setInterval(updateTimer, 1000);
-        // Intentar ejecutar una vez rápido por si el elemento ya está listo
-        setTimeout(updateTimer, 50);
+
+        // Intento rápido por si el elemento ya está listo
+        computeAndFormat();
+
+        // Re-intentar hasta que el elemento exista (evita problemas por el orden de renderizado en Streamlit)
+        const findInterval = setInterval(function() {{
+            const el = document.getElementById(elementId);
+            if (el) {{
+                clearInterval(findInterval);
+                computeAndFormat();
+                // Actualizamos cada segundo
+                setInterval(computeAndFormat, 1000);
+            }}
+        }}, 150);
     }})();
     </script>
-    
+
     <style>
     .clock-container {{
         background-color: #0e1117;
         border: 1px solid #ff4b4b;
         border-radius: 8px;
-        padding: 15px;
+        padding: 12px;
         text-align: center;
-        margin-bottom: 20px;
-        box-shadow: 0 0 10px rgba(255, 75, 75, 0.15);
+        margin-bottom: 12px;
+        box-shadow: 0 0 8px rgba(255, 75, 75, 0.12);
     }}
     .clock-label {{
         color: #aaa;
         font-size: 0.75rem;
         text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 5px;
+        letter-spacing: 1.6px;
+        margin-bottom: 4px;
     }}
     .clock-time {{
         font-family: 'Courier New', monospace;
-        font-size: 2.2rem;
+        font-size: 1.9rem;
         font-weight: 700;
         color: #ff4b4b;
-        text-shadow: 0 0 8px rgba(255, 75, 75, 0.4);
+        text-shadow: 0 0 6px rgba(255, 75, 75, 0.35);
     }}
     .clock-target {{
         color: #666;
         font-size: 0.85rem;
-        margin-top: 5px;
+        margin-top: 6px;
     }}
     </style>
     """
-    
-    # Esta línea es la que imprime el HTML en la barra lateral
-    st.sidebar.markdown(clock_html, unsafe_allow_html=True)
+
+    # Renderizar dentro de la barra lateral
+    with st.sidebar:
+        # Ajusta la altura si necesitas más/menos espacio
+        components_html(clock_html, height=120, scrolling=False)
+
 
 # ==========================================
 # 5. LÓGICA DE HORARIO (CORREGIDA & UPDATED)
