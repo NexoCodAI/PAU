@@ -146,7 +146,7 @@ real_type, block_name, duration = get_current_block()
 
 # --- SIDEBAR DASHBOARD ---
 with st.sidebar:
-    st.title("🦁 PAU Elite")
+    st.title("🎓 PAU Elite")
     st.markdown("---")
     
     # Panel de Control
@@ -444,4 +444,4 @@ with tab4:
 
 # Footer
 st.markdown("---")
-st.caption("🦁 PAU Ultimate Tracker v2.0 | Time Boxing Enabled")
+st.caption("🎓 PAU Ultimate Tracker v2.0 | Time Boxing Enabled")
