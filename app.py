@@ -109,7 +109,7 @@ def save_data(data):
 
 from streamlit.components.v1 import html as components_html
 
-def show_reliable_clock(target_hour_float):
+def show_modern_clock(target_hour_float):
     """
     Reloj fiable para Streamlit usando components_html (JS siempre se ejecuta).
     Usa fuentes del sistema para evitar problemas con Google Fonts.
