@@ -163,11 +163,11 @@ real_type, block_name, duration = get_current_block()
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.title("🦁 PAU TRACKER")
+    st.title("PAU TRACKER")
     st.markdown("### Estado Actual")
     
     # Checkbox para saltarse el descanso si es necesario
-    force_study = st.checkbox("🔥 MODO GUERRA (Ignorar Descansos)", value=False)
+    force_study = st.checkbox("🔥 MODO INTENSO (Ignorar Descansos)", value=False)
     
     # Muestra el bloque actual
     st.info(f"**{block_name}**")
