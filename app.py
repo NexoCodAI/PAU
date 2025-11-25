@@ -108,6 +108,7 @@ def save_data(data):
 def show_modern_clock(target_hour_float):
     """
     Muestra una cuenta atrás JS visualmente atractiva hasta la hora decimal indicada.
+    Versión robusta: Busca el elemento activamente para evitar el error --:--:--
     """
     if target_hour_float == 0:
         return # No mostrar reloj en tiempo libre
@@ -115,12 +116,19 @@ def show_modern_clock(target_hour_float):
     # Convertir hora decimal (ej. 17.5) a horas y minutos (17:30)
     th = int(target_hour_float)
     tm = int((target_hour_float - th) * 60)
+    
+    # Generamos un ID único basado en el tiempo para evitar conflictos en el navegador
+    # Necesitamos importar time si no está importado globalmente, pero asumimos que sí por el contexto.
+    unique_id = f"clock_val_{int(time.time()*1000)}"
 
-    # HTML y JS inyectado para el reloj
+    # HTML y JS inyectado
+    # IMPORTANTE: Usamos f-string con triple comilla.
+    # Las llaves de Python {var} se reemplazan.
+    # Las llaves de JS/CSS deben ser dobles {{...}} para que Python no las confunda.
     clock_html = f"""
     <div class="clock-container">
         <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
-        <div id="countdown" class="clock-time">--:--:--</div>
+        <div id="{unique_id}" class="clock-time">--:--:--</div>
         <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
     </div>
 
@@ -128,22 +136,23 @@ def show_modern_clock(target_hour_float):
     (function() {{
         var targetHour = {th};
         var targetMin = {tm};
+        var elementId = "{unique_id}";
         
         function updateTimer() {{
+            var el = document.getElementById(elementId);
+            
+            // Si el elemento aún no existe en el DOM, no hacemos nada y esperamos al siguiente ciclo
+            if (!el) return;
+            
             var now = new Date();
             var target = new Date();
             target.setHours(targetHour, targetMin, 0, 0);
             
-            // Si la hora objetivo es mañana (ej. madrugada), ajustar fecha (opcional, aquí asumimos mismo día)
-            
             var diff = target - now;
             
             if (diff <= 0) {{
-                var el = document.getElementById("countdown");
-                if(el) {{
-                    el.innerHTML = "00:00:00";
-                    el.style.color = "#555";
-                }}
+                el.innerHTML = "00:00:00";
+                el.style.color = "#555";
                 return;
             }}
             
@@ -155,12 +164,13 @@ def show_modern_clock(target_hour_float):
             minutes = (minutes < 10) ? "0" + minutes : minutes;
             seconds = (seconds < 10) ? "0" + seconds : seconds;
             
-            var el = document.getElementById("countdown");
-            if(el) el.innerHTML = hours + ":" + minutes + ":" + seconds;
+            el.innerHTML = hours + ":" + minutes + ":" + seconds;
         }}
         
+        // Ejecutar cada segundo
         setInterval(updateTimer, 1000);
-        updateTimer();
+        // Intentar ejecutar una vez rápido por si el elemento ya está listo
+        setTimeout(updateTimer, 50);
     }})();
     </script>
     
@@ -195,6 +205,8 @@ def show_modern_clock(target_hour_float):
     }}
     </style>
     """
+    
+    # Esta línea es la que imprime el HTML en la barra lateral
     st.sidebar.markdown(clock_html, unsafe_allow_html=True)
 
 # ==========================================
