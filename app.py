@@ -127,29 +127,42 @@ def show_modern_clock(target_hour_float):
     </div>
 
     <script>
-        const el = document.getElementById("{uid}");
+        function pad(n) {{
+            return n < 10 ? "0" + n : n;
+        }}
 
-        function tick() {{
-            const now = new Date();
-            const target = new Date();
-            target.setHours({th}, {tm}, 0, 0);
-
-            let diff = target - now;
-
-            if (diff <= 0) {{
-                el.innerHTML = "00:00:00";
+        function startClock() {{
+            const el = document.getElementById("{uid}");
+            if (!el) {{
+                setTimeout(startClock, 100);  // 🔥 vuelve a intentarlo hasta que exista
                 return;
             }}
 
-            const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
-            const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-            const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+            function tick() {{
+                const now = new Date();
+                const target = new Date();
+                target.setHours({th}, {tm}, 0, 0);
 
-            el.innerHTML = h + ":" + m + ":" + s;
+                let diff = target - now;
+
+                if (diff <= 0) {{
+                    el.innerHTML = "00:00:00";
+                    return;
+                }}
+
+                const h = pad(Math.floor(diff / 3600000));
+                const m = pad(Math.floor((diff % 3600000) / 60000));
+                const s = pad(Math.floor((diff % 60000) / 1000));
+
+                el.innerHTML = h + ":" + m + ":" + s;
+            }}
+
+            tick();
+            setInterval(tick, 1000);
         }}
 
-        tick();
-        setInterval(tick, 1000);
+        // 🔥 Arranca cuando el DOM esté listo
+        setTimeout(startClock, 50);
     </script>
 
     <style>
@@ -185,6 +198,7 @@ def show_modern_clock(target_hour_float):
     """
 
     st.sidebar.markdown(html, unsafe_allow_html=True)
+
 
 
 
