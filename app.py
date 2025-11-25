@@ -3,6 +3,7 @@ import json
 import datetime
 import os
 import time
+import pytz
 
 # ==========================================
 # 1. CONFIGURACIÓN Y ESTILO
@@ -109,7 +110,10 @@ def get_current_block():
     Define qué toca estudiar según el día y la hora.
     Basado estrictamente en las tablas del PDF.
     """
-    now = datetime.datetime.now()
+
+    madrid_tz = pytz.timezone('Europe/Madrid')
+    now = datetime.datetime.now(madrid_tz) 
+
     weekday = now.weekday() # 0=Lunes ... 6=Domingo
     hour = now.hour + now.minute / 60.0
 
