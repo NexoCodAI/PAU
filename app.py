@@ -109,7 +109,7 @@ def save_data(data):
 import time
 import streamlit as st
 
-def show_simple_clock(target_hour_float):
+def show_modern_clock(target_hour_float):
     if target_hour_float == 0:
         return
     
