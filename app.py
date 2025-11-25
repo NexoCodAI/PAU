@@ -106,98 +106,104 @@ def save_data(data):
 # 4. FUNCIONES VISUALES (RELOJ)
 # ==========================================
 
-import time
-import streamlit as st
 
-def show_modern_clock(target_hour_float):
-    if target_hour_float == 0:
+from streamlit.components.v1 import html as components_html
+
+def show_reliable_clock(target_hour_float):
+    """
+    Reloj fiable para Streamlit usando components_html (JS siempre se ejecuta).
+    Usa fuentes del sistema para evitar problemas con Google Fonts.
+    """
+    if not target_hour_float:
         return
-    
+
     th = int(target_hour_float)
     tm = int(round((target_hour_float - th) * 60))
     uid = f"clock_{int(time.time()*1000)}"
 
     html = f"""
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-    <div class="clock-box">
-        <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
-        <div id="{uid}" class="clock-time">--:--:--</div>
-        <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
+    <div class="clock-box" id="{uid}_wrap">
+      <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
+      <div id="{uid}" class="clock-time">--:--:--</div>
+      <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
     </div>
 
-    <script>
-        function pad(n) {{
-            return n < 10 ? "0" + n : n;
-        }}
-
-        function startClock() {{
-            const el = document.getElementById("{uid}");
-            if (!el) {{
-                setTimeout(startClock, 100);  // 🔥 vuelve a intentarlo hasta que exista
-                return;
-            }}
-
-            function tick() {{
-                const now = new Date();
-                const target = new Date();
-                target.setHours({th}, {tm}, 0, 0);
-
-                let diff = target - now;
-
-                if (diff <= 0) {{
-                    el.innerHTML = "00:00:00";
-                    return;
-                }}
-
-                const h = pad(Math.floor(diff / 3600000));
-                const m = pad(Math.floor((diff % 3600000) / 60000));
-                const s = pad(Math.floor((diff % 60000) / 1000));
-
-                el.innerHTML = h + ":" + m + ":" + s;
-            }}
-
-            tick();
-            setInterval(tick, 1000);
-        }}
-
-        // 🔥 Arranca cuando el DOM esté listo
-        setTimeout(startClock, 50);
-    </script>
-
     <style>
-        .clock-box {{
-            font-family: 'Poppins', sans-serif;
-            background-color: #11141c;
-            border: 2px solid #ff4b4b;
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }}
-        .clock-label {{
-            color: #ccc;
-            font-size: 0.75rem;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }}
-        .clock-time {{
-            font-size: 2.2rem;
-            font-weight: 600;
-            color: #ff4b4b;
-            text-shadow: 0 0 8px rgba(255,75,75,0.4);
-        }}
-        .clock-target {{
-            color: #888;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }}
+      /* Fuente del sistema: evita "letra rara" si no carga Google Fonts */
+      .clock-box {{
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        background-color: #11141c;
+        border: 2px solid #ff4b4b;
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+        box-sizing: border-box;
+        width: 100%;
+      }}
+      .clock-label {{
+        color: #cfcfcf;
+        font-size: 0.75rem;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+      }}
+      .clock-time {{
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #ff4b4b;
+        text-shadow: 0 0 8px rgba(255,75,75,0.35);
+        line-height: 1;
+      }}
+      .clock-target {{
+        color: #9a9a9a;
+        margin-top: 6px;
+        font-size: 0.9rem;
+      }}
     </style>
+
+    <script>
+    (function(){{
+      const elId = "{uid}";
+
+      function pad(n) {{ return n < 10 ? "0" + n : n; }}
+
+      function updateOnce() {{
+        const el = document.getElementById(elId);
+        if(!el) return false;
+        const now = new Date();
+        const target = new Date();
+        target.setHours({th}, {tm}, 0, 0);
+        let diff = target - now;
+        if (diff <= 0) {{
+          el.innerText = "00:00:00";
+          return true;
+        }}
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        el.innerText = pad(h) + ":" + pad(m) + ":" + pad(s);
+        return true;
+      }}
+
+      // Esperamos al elemento (reintentos cortos). Cuando exista, arrancamos intervalo.
+      let tries = 0;
+      const waiter = setInterval(function() {{
+        const ok = updateOnce();
+        tries += 1;
+        if (ok || tries > 80) {{
+          clearInterval(waiter);
+          if (ok) {{
+            // Si el elemento ya existía y se actualizó, programamos la actualización cada segundo.
+            setInterval(updateOnce, 1000);
+          }}
+        }}
+      }}, 50);
+    }})();
+    </script>
     """
 
-    st.sidebar.markdown(html, unsafe_allow_html=True)
+    # Height ajustable: sube si necesitas más espacio visual
+    components_html(html, height=140, scrolling=False)
+
 
 
 
