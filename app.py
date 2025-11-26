@@ -4,6 +4,8 @@ import datetime
 import os
 import time
 import pytz
+import gspread
+from google.oauth2.service_account import Credentials
 from streamlit.components.v1 import html as components_html
 
 # ==========================================
@@ -18,7 +20,6 @@ st.set_page_config(
 )
 
 # Constantes del Sistema
-FILE_NAME = "pau_ultimate_data.json"
 MIN_MINUTES_PER_TASK = 40  # Mínimo tiempo productivo por tarea (Técnica Pomodoro)
 
 # Estilos CSS Personalizados para modo Dark/Elite
@@ -69,18 +70,29 @@ DEFAULT_SYLLABUS = {
 }
 
 # ==========================================
-# 3. GESTIÓN DE DATOS (JSON)
+# 3. GESTIÓN DE DATOS (CONECTADO A GOOGLE SHEETS)
 # ==========================================
 
-def load_data():
-    if os.path.exists(FILE_NAME):
-        try:
-            with open(FILE_NAME, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
-            return create_defaults()
-    else:
-        return create_defaults()
+# Caché de la conexión para no reconectar en cada click
+@st.cache_resource
+def get_google_sheet():
+    """Conecta con Google Sheets usando st.secrets"""
+    # Definir el alcance (scope)
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+    
+    # Cargar credenciales desde los secretos de Streamlit
+    creds_dict = dict(st.secrets["gcp_service_account"])
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+    
+    # Autorizar cliente
+    client = gspread.authorize(creds)
+    
+    # Abrir la hoja por URL
+    sh = client.open_by_url(st.secrets["sheets"]["sheet_url"])
+    return sh.sheet1  # Devuelve la primera pestaña
 
 def create_defaults():
     new_data = {}
@@ -98,16 +110,37 @@ def create_defaults():
             })
     return new_data
 
+def load_data():
+    """Carga los datos desde la celda A1 de Google Sheets"""
+    try:
+        sheet = get_google_sheet()
+        # Leemos la celda A1
+        raw_data = sheet.acell('A1').value
+        
+        if raw_data:
+            return json.loads(raw_data)
+        else:
+            # Si la celda está vacía, creamos defaults y los guardamos
+            defaults = create_defaults()
+            save_data(defaults)
+            return defaults
+    except Exception as e:
+        st.error(f"Error conectando con la base de datos: {e}")
+        return create_defaults()
+
 def save_data(data):
-    with open(FILE_NAME, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+    """Guarda los datos en la celda A1 de Google Sheets"""
+    try:
+        sheet = get_google_sheet()
+        json_str = json.dumps(data)
+        # Escribimos todo el JSON en la celda A1
+        sheet.update_acell('A1', json_str)
+    except Exception as e:
+        st.error(f"Error guardando datos: {e}")
 
 # ==========================================
 # 4. FUNCIONES VISUALES (RELOJ)
 # ==========================================
-
-
-from streamlit.components.v1 import html as components_html
 
 def show_modern_clock(target_hour_float):
     """
@@ -203,10 +236,6 @@ def show_modern_clock(target_hour_float):
 
     # Height ajustable: sube si necesitas más espacio visual
     components_html(html, height=140, scrolling=False)
-
-
-
-
 
 # ==========================================
 # 5. LÓGICA DE HORARIO (CORREGIDA & UPDATED)
@@ -555,7 +584,8 @@ with tab4:
 
     st.markdown("---")
     if st.button("☠️ RESET TOTAL (Borrar todos los datos)"):
-        if os.path.exists(FILE_NAME):
-            os.remove(FILE_NAME)
-        st.session_state.clear()
+        # En versión nube, reseteamos a defaults y sobrescribimos la celda
+        new_defaults = create_defaults()
+        save_data(new_defaults)
+        st.session_state.data = new_defaults
         st.rerun()
