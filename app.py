@@ -516,44 +516,43 @@ with tab1:
                                 st.rerun()
 
 # ==========================================
-# TAB 2: GESTIÓN DE TEMARIO (CORREGIDO)
+# TAB 2: GESTIÓN DE TEMARIO (CON MEMORIA ANTI-CIERRE)
 # ==========================================
 with tab2:
     st.header("📚 Temario (Syllabus)")
     st.info("Activa (✅) los temas vistos en clase para que entren en la rotación.")
     query = st.text_input("🔍 Buscar tema...")
 
-    # Iteramos sobre una copia de las claves para seguridad
+    # Iteramos sobre una copia de las claves
     for subj in list(data.keys()):
         if subj == "general_notes": continue
         
         try:
-            # 1. Validación de estructura
             topic_list = data[subj]
             if not isinstance(topic_list, list):
                 st.error(f"⚠️ Datos corruptos en: {subj}")
                 continue 
 
-            # 2. Cálculos
+            # Cálculos
             count_active = sum(1 for x in topic_list if isinstance(x, dict) and x.get('unlocked'))
             count_total = len(topic_list)
             
-            # 3. Etiqueta del expander (String forzado)
             label_expander = str(f"**{subj}** ({count_active}/{count_total})")
             
-            # 4. Generamos una clave única para LOS ELEMENTOS DE DENTRO, no para el expander
-            safe_key = f"k_{str(subj).strip().replace(' ', '_')}"
+            # --- TRUCO DE MEMORIA ---
+            # Verificamos si esta asignatura fue la última tocada para forzar que se abra
+            should_be_expanded = (st.session_state.get("last_active_subj") == subj)
 
-            # --- CORRECCIÓN AQUÍ: Quitamos 'key=' del expander ---
-            with st.expander(label_expander):
+            # Usamos 'expanded=' en lugar de 'key='
+            with st.expander(label_expander, expanded=should_be_expanded):
+                
+                safe_key = f"k_{str(subj).strip().replace(' ', '_')}"
                 
                 # Input Añadir Tema
                 c_in, c_bt = st.columns([0.8, 0.2])
-                # Usamos safe_key aquí para que el input sea único
                 new_t = c_in.text_input(f"Nuevo tema en {subj}", key=f"new_{safe_key}")
                 
                 if c_bt.button("➕", key=f"add_{safe_key}") and new_t:
-                    # Determinar categoría
                     if not topic_list:
                         new_category = DEFAULT_SYLLABUS.get(subj, {}).get("category", "memory")
                     else:
@@ -568,6 +567,9 @@ with tab2:
                         "last_error": "", 
                         "extra_queue": True
                     })
+                    
+                    # GUARDAMOS LA ASIGNATURA ACTIVA ANTES DEL RERUN
+                    st.session_state["last_active_subj"] = subj
                     save_data(data)
                     st.rerun()
                 
@@ -587,6 +589,9 @@ with tab2:
                         if act != is_unlocked:
                             topic["unlocked"] = act
                             if act: topic["next_review"] = str(datetime.date.today())
+                            
+                            # GUARDAMOS LA ASIGNATURA ACTIVA ANTES DEL RERUN
+                            st.session_state["last_active_subj"] = subj
                             save_data(data)
                             st.rerun() 
                         
@@ -599,6 +604,9 @@ with tab2:
                         
                         if urg != is_urgent:
                             topic["extra_queue"] = urg
+                            
+                            # GUARDAMOS LA ASIGNATURA ACTIVA ANTES DEL RERUN
+                            st.session_state["last_active_subj"] = subj
                             save_data(data)
                             st.rerun()
 
