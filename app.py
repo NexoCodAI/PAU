@@ -516,7 +516,7 @@ with tab1:
                                 st.rerun()
 
 # ==========================================
-# TAB 2: GESTIÓN DE TEMARIO
+# TAB 2: GESTIÓN DE TEMARIO (CORREGIDO)
 # ==========================================
 with tab2:
     st.header("📚 Temario (Syllabus)")
@@ -525,7 +525,13 @@ with tab2:
 
     for subj in data:
         if subj == "general_notes": continue
-        with st.expander(f"**{subj}** ({len([x for x in data[subj] if x['unlocked']])}/{len(data[subj])})"):
+        
+        # --- CORRECCIÓN AQUÍ: Añadimos 'key' única para que no se cierre al actualizar el contador ---
+        count_active = len([x for x in data[subj] if x['unlocked']])
+        count_total = len(data[subj])
+        label_expander = f"**{subj}** ({count_active}/{count_total})"
+        
+        with st.expander(label_expander, key=f"exp_{subj}"):
             # Opción añadir manual
             c_in, c_bt = st.columns([0.8, 0.2])
             new_t = c_in.text_input(f"Nuevo tema en {subj}", key=f"new_{subj}")
@@ -540,22 +546,28 @@ with tab2:
             
             st.markdown("---")
             for i, topic in enumerate(data[subj]):
+                # Filtrar por búsqueda
                 if query.lower() in topic["name"].lower():
                     cols = st.columns([0.1, 0.6, 0.2, 0.1])
+                    
+                    # Checkbox de activación
                     act = cols[0].checkbox("", value=topic["unlocked"], key=f"chk_{subj}_{i}")
                     if act != topic["unlocked"]:
                         topic["unlocked"] = act
                         if act: topic["next_review"] = str(datetime.date.today())
                         save_data(data)
-                        st.rerun()
+                        st.rerun() # Al recargar, la 'key' mantiene la caja abierta
+                    
                     cols[1].write(topic["name"])
                     cols[2].caption(f"Nv. {topic['level']}")
+                    
+                    # Toggle de Fuego (Urgencia)
                     urg = cols[3].toggle("🔥", value=topic["extra_queue"], key=f"urg_{subj}_{i}")
                     if urg != topic["extra_queue"]:
                         topic["extra_queue"] = urg
                         save_data(data)
                         st.rerun()
-
+                        
 # ==========================================
 # TAB 3: NOTAS Y ERRORES (MODIFICADO)
 # ==========================================
