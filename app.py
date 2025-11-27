@@ -516,7 +516,7 @@ with tab1:
                                 st.rerun()
 
 # ==========================================
-# TAB 2: GESTIÓN DE TEMARIO (CORREGIDO)
+# TAB 2: GESTIÓN DE TEMARIO (CORREGIDO Y ROBUSTO)
 # ==========================================
 with tab2:
     st.header("📚 Temario (Syllabus)")
@@ -526,18 +526,34 @@ with tab2:
     for subj in data:
         if subj == "general_notes": continue
         
-        # --- CORRECCIÓN AQUÍ: Añadimos 'key' única para que no se cierre al actualizar el contador ---
-        count_active = len([x for x in data[subj] if x['unlocked']])
-        count_total = len(data[subj])
+        # 1. Validación de datos para evitar TypeError: Asegura que data[subj] es una lista.
+        topic_list = data[subj]
+        if not isinstance(topic_list, list):
+            st.error(f"⚠️ **Error crítico en la asignatura '{subj}'**: La estructura de datos está corrupta. Por favor, revisa tus datos guardados o usa el botón '☠️ RESET DE FÁBRICA' en la pestaña '⚙️ Ajustes'.")
+            continue # Saltamos esta asignatura
+            
+        # 2. Cálculo de contadores (más seguro)
+        count_active = sum(1 for x in topic_list if isinstance(x, dict) and x.get('unlocked'))
+        count_total = len(topic_list)
         label_expander = f"**{subj}** ({count_active}/{count_total})"
         
+        # 3. Expander con key (Soluciona el problema de que se cerraba)
         with st.expander(label_expander, key=f"exp_{subj}"):
-            # Opción añadir manual
+            
+            # Opción añadir manual (corregida para evitar crash si topic_list está vacía)
             c_in, c_bt = st.columns([0.8, 0.2])
             new_t = c_in.text_input(f"Nuevo tema en {subj}", key=f"new_{subj}")
             if c_bt.button("➕", key=f"add_{subj}") and new_t:
-                data[subj].append({
-                    "name": new_t, "category": data[subj][0]["category"], 
+                # Determinar categoría: si la lista está vacía, buscamos la categoría por defecto
+                if not topic_list:
+                    # Busca la categoría en el SYLLABUS por defecto
+                    new_category = DEFAULT_SYLLABUS.get(subj, {}).get("category", "memory")
+                else:
+                    # Toma la categoría del primer elemento existente
+                    new_category = topic_list[0]["category"]
+
+                topic_list.append({
+                    "name": new_t, "category": new_category, 
                     "unlocked": True, "level": 0, "next_review": str(datetime.date.today()), 
                     "last_error": "", "extra_queue": True
                 })
@@ -545,7 +561,7 @@ with tab2:
                 st.rerun()
             
             st.markdown("---")
-            for i, topic in enumerate(data[subj]):
+            for i, topic in enumerate(topic_list):
                 # Filtrar por búsqueda
                 if query.lower() in topic["name"].lower():
                     cols = st.columns([0.1, 0.6, 0.2, 0.1])
@@ -556,7 +572,7 @@ with tab2:
                         topic["unlocked"] = act
                         if act: topic["next_review"] = str(datetime.date.today())
                         save_data(data)
-                        st.rerun() # Al recargar, la 'key' mantiene la caja abierta
+                        st.rerun() 
                     
                     cols[1].write(topic["name"])
                     cols[2].caption(f"Nv. {topic['level']}")
