@@ -516,73 +516,98 @@ with tab1:
                                 st.rerun()
 
 # ==========================================
-# TAB 2: GESTIÓN DE TEMARIO (CORREGIDO Y ROBUSTO)
+# TAB 2: GESTIÓN DE TEMARIO (BLINDADO)
 # ==========================================
 with tab2:
     st.header("📚 Temario (Syllabus)")
     st.info("Activa (✅) los temas vistos en clase para que entren en la rotación.")
     query = st.text_input("🔍 Buscar tema...")
 
-    for subj in data:
+    # Iteramos sobre una copia de las claves para evitar errores de modificación durante iteración
+    for subj in list(data.keys()):
         if subj == "general_notes": continue
         
-        # 1. Validación de datos para evitar TypeError: Asegura que data[subj] es una lista.
-        topic_list = data[subj]
-        if not isinstance(topic_list, list):
-            st.error(f"⚠️ **Error crítico en la asignatura '{subj}'**: La estructura de datos está corrupta. Por favor, revisa tus datos guardados o usa el botón '☠️ RESET DE FÁBRICA' en la pestaña '⚙️ Ajustes'.")
-            continue # Saltamos esta asignatura
-            
-        # 2. Cálculo de contadores (más seguro)
-        count_active = sum(1 for x in topic_list if isinstance(x, dict) and x.get('unlocked'))
-        count_total = len(topic_list)
-        label_expander = f"**{subj}** ({count_active}/{count_total})"
-        
-        # 3. Expander con key (Soluciona el problema de que se cerraba)
-        with st.expander(label_expander, key=f"exp_{subj}"):
-            
-            # Opción añadir manual (corregida para evitar crash si topic_list está vacía)
-            c_in, c_bt = st.columns([0.8, 0.2])
-            new_t = c_in.text_input(f"Nuevo tema en {subj}", key=f"new_{subj}")
-            if c_bt.button("➕", key=f"add_{subj}") and new_t:
-                # Determinar categoría: si la lista está vacía, buscamos la categoría por defecto
-                if not topic_list:
-                    # Busca la categoría en el SYLLABUS por defecto
-                    new_category = DEFAULT_SYLLABUS.get(subj, {}).get("category", "memory")
-                else:
-                    # Toma la categoría del primer elemento existente
-                    new_category = topic_list[0]["category"]
+        # --- BLOQUE DE SEGURIDAD START ---
+        try:
+            # 1. Validación de estructura
+            topic_list = data[subj]
+            if not isinstance(topic_list, list):
+                st.error(f"⚠️ Datos corruptos en: {subj}")
+                continue 
 
-                topic_list.append({
-                    "name": new_t, "category": new_category, 
-                    "unlocked": True, "level": 0, "next_review": str(datetime.date.today()), 
-                    "last_error": "", "extra_queue": True
-                })
-                save_data(data)
-                st.rerun()
+            # 2. Cálculos seguros
+            count_active = sum(1 for x in topic_list if isinstance(x, dict) and x.get('unlocked'))
+            count_total = len(topic_list)
             
-            st.markdown("---")
-            for i, topic in enumerate(topic_list):
-                # Filtrar por búsqueda
-                if query.lower() in topic["name"].lower():
-                    cols = st.columns([0.1, 0.6, 0.2, 0.1])
-                    
-                    # Checkbox de activación
-                    act = cols[0].checkbox("", value=topic["unlocked"], key=f"chk_{subj}_{i}")
-                    if act != topic["unlocked"]:
-                        topic["unlocked"] = act
-                        if act: topic["next_review"] = str(datetime.date.today())
-                        save_data(data)
-                        st.rerun() 
-                    
-                    cols[1].write(topic["name"])
-                    cols[2].caption(f"Nv. {topic['level']}")
-                    
-                    # Toggle de Fuego (Urgencia)
-                    urg = cols[3].toggle("🔥", value=topic["extra_queue"], key=f"urg_{subj}_{i}")
-                    if urg != topic["extra_queue"]:
-                        topic["extra_queue"] = urg
-                        save_data(data)
-                        st.rerun()
+            # 3. Forzar conversión a String para evitar TypeError en Python 3.13
+            label_expander = str(f"**{subj}** ({count_active}/{count_total})")
+            
+            # 4. Generar una key segura (sin espacios ni caracteres raros)
+            safe_key = f"exp_{str(subj).strip().replace(' ', '_')}"
+
+            # 5. Expander
+            with st.expander(label_expander, key=safe_key):
+                
+                # Input Añadir Tema
+                c_in, c_bt = st.columns([0.8, 0.2])
+                new_t = c_in.text_input(f"Nuevo tema en {subj}", key=f"new_{safe_key}")
+                
+                if c_bt.button("➕", key=f"add_{safe_key}") and new_t:
+                    # Determinar categoría por defecto
+                    if not topic_list:
+                        new_category = DEFAULT_SYLLABUS.get(subj, {}).get("category", "memory")
+                    else:
+                        new_category = topic_list[0].get("category", "memory")
+
+                    topic_list.append({
+                        "name": new_t, 
+                        "category": new_category, 
+                        "unlocked": True, 
+                        "level": 0, 
+                        "next_review": str(datetime.date.today()), 
+                        "last_error": "", 
+                        "extra_queue": True
+                    })
+                    save_data(data)
+                    st.rerun()
+                
+                st.markdown("---")
+                
+                # Listado de temas
+                for i, topic in enumerate(topic_list):
+                    # Validación extra por si el topic no es diccionario
+                    if not isinstance(topic, dict): continue
+
+                    if query.lower() in topic.get("name", "").lower():
+                        cols = st.columns([0.1, 0.6, 0.2, 0.1])
+                        
+                        # Checkbox
+                        is_unlocked = topic.get("unlocked", False)
+                        act = cols[0].checkbox("", value=is_unlocked, key=f"chk_{safe_key}_{i}")
+                        
+                        if act != is_unlocked:
+                            topic["unlocked"] = act
+                            if act: topic["next_review"] = str(datetime.date.today())
+                            save_data(data)
+                            st.rerun() 
+                        
+                        cols[1].write(topic.get("name", "Sin nombre"))
+                        cols[2].caption(f"Nv. {topic.get('level', 0)}")
+                        
+                        # Toggle Fuego
+                        is_urgent = topic.get("extra_queue", False)
+                        urg = cols[3].toggle("🔥", value=is_urgent, key=f"urg_{safe_key}_{i}")
+                        
+                        if urg != is_urgent:
+                            topic["extra_queue"] = urg
+                            save_data(data)
+                            st.rerun()
+
+        except Exception as e:
+            st.error(f"Error al renderizar la asignatura '{subj}': {e}")
+            # Esto permite que el resto de la app cargue aunque una asignatura falle
+            continue
+        # --- BLOQUE DE SEGURIDAD END ---
                         
 # ==========================================
 # TAB 3: NOTAS Y ERRORES (MODIFICADO)
