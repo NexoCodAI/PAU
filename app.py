@@ -30,42 +30,124 @@ st.markdown("""
     h1, h2, h3 { font-family: 'Helvetica Neue', sans-serif; }
     .css-1d391kg { padding-top: 1rem; }
     div.stProgress > div > div > div > div { background-color: #ff4b4b; }
+    /* Estilo para notas */
+    .stTextArea textarea { font-family: 'Courier New', monospace; }
     </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 2. BASE DE DATOS (SYLLABUS)
+# 2. BASE DE DATOS (SYLLABUS COMPLETO 2025)
 # ==========================================
 
-# Datos extraídos del PDF y la Guía Maestra
 DEFAULT_SYLLABUS = {
     "Matemáticas II": {
         "category": "science",
-        "topics": ["Matrices", "Rango e Inversa", "Determinantes", "Sistemas (Rouché)", "Límites & Continuidad", "Derivadas", "Optimización", "Integrales Indef.", "Integrales Def.", "Geo: Rectas y Planos", "Geo: Métrico", "Probabilidad Total", "Binomial/Normal"]
+        "topics": [
+            "1. Límites y Continuidad (Asíntotas, Bolzano)",
+            "2. Derivadas (Reglas, L'Hôpital, Rolle/Lagrange)",
+            "3. Representación de Funciones (Optimización, Curvatura)",
+            "4. Integral Indefinida (Métodos: Partes, Racionales, Trigonométricas)",
+            "5. Integral Definida (Áreas, Regla de Barrow)",
+            "6. Matrices (Operaciones, Rango, Inversa)",
+            "7. Determinantes (Sarrus, Propiedades, Menores)",
+            "8. Sistemas de Ecuaciones (Gauss, Rouché-Frobenius, Cramer)",
+            "9. Vectores (Producto Escalar, Vectorial y Mixto)",
+            "10. Rectas y Planos (Ecuaciones, Haz de planos)",
+            "11. Posiciones Relativas (Rectas y Planos)",
+            "12. Ángulos y Distancias (Métrica espacial)"
+        ]
     },
     "Física": {
         "category": "science",
-        "topics": ["Campo Gravitatorio", "Campo Eléctrico", "Campo Magnético", "Inducción EM", "Ondas Mecánicas", "Ondas Sonoras", "Óptica Geométrica", "Física Relativista", "Física Cuántica", "Física Nuclear"]
+        "topics": [
+            "Herramientas matemáticas (Vectores)",
+            "Vibraciones: M.A.S.",
+            "Ondas Mecánicas y Sonido",
+            "Óptica Geométrica (Espejos y Lentes)",
+            "Campo Gravitatorio (Fuerzas y Energías)",
+            "Campo Eléctrico (Cargas y Potencial)",
+            "Campo Magnético (Fuentes y Fuerzas)",
+            "Inducción Electromagnética",
+            "Física Moderna: Relatividad Especial",
+            "Física Cuántica (Efecto Fotoeléctrico)",
+            "Física Nuclear (Radiactividad)"
+        ]
     },
     "Química": {
         "category": "science",
-        "topics": ["Estructura Atómica", "Sistema Periódico", "Enlace Químico", "Cinética Química", "Equilibrio Químico", "Ácido-Base", "Redox", "Química del Carbono"]
-    },
-    "Tecnología e Ing.": {
-        "category": "science",
-        "topics": ["Materiales", "Diagramas de Fase", "Máquinas Térmicas", "Motores", "Neumática e Hidráulica", "Sistemas Automáticos", "Electrónica Digital"]
+        "topics": [
+            "T1: Estructura de la materia (Átomo)",
+            "T2: Enlace Químico (Iónico, Covalente, Metálico)",
+            "T3: Termoquímica (Entalpía y Entropía)",
+            "T4: Cinética Química (Velocidad reacción)",
+            "T5: Equilibrio Químico (Le Chatelier)",
+            "T6: Reacciones Ácido-Base",
+            "T7: Reacciones REDOX (Pilas y Electrólisis)",
+            "T8: Química del Carbono (Orgánica)"
+        ]
     },
     "Historia de España": {
         "category": "memory",
-        "topics": ["Raíces Hcas", "Crisis A.R. (1808-1833)", "Estado Liberal (1833-1874)", "Restauración (1875-1902)", "Alfonso XIII (1902-1931)", "II República", "Guerra Civil", "Franquismo", "Transición"]
+        "topics": [
+            "B1-B2: Raíces Históricas (Prehistoria - Edad Media)",
+            "B3: Edad Moderna (RRCC, América, Austrias)",
+            "B4: Crisis Antiguo Régimen (1788-1833)",
+            "B5: Estado Liberal (Isabel II y Sexenio)",
+            "B6: La Restauración (1874-1902)",
+            "B7: Transformaciones Económicas s.XIX",
+            "B8: Alfonso XIII y Crisis de la Restauración",
+            "B9: La Segunda República (1931-1936)",
+            "B10: La Guerra Civil (1936-1939)",
+            "B11: La Dictadura Franquista (1939-1975)",
+            "B12: La Transición (1975-1982)",
+            "B13: Democracia y Constitución 1978"
+        ]
     },
-    "Hª Filosofía": {
+    "Historia de la Filosofía": {
         "category": "memory",
-        "topics": ["Platón: Ideas", "Platón: Política", "Aristóteles", "Tomás de Aquino", "Descartes", "Hume", "Rousseau", "Kant: Conocimiento", "Kant: Ética", "Marx", "Nietzsche", "Ortega y Gasset"]
+        "topics": [
+            "Platón",
+            "Aristóteles",
+            "Agustín de Hipona",
+            "Tomás de Aquino",
+            "Descartes",
+            "Hume",
+            "Rousseau",
+            "Kant",
+            "Marx",
+            "Nietzsche",
+            "Ortega y Gasset",
+            "Hannah Arendt"
+        ]
+    },
+    "Lengua y Literatura": {
+        "category": "memory",
+        "topics": [
+            "Semántica y Lexicología (Sinonimia, Campos semánticos)",
+            "Morfología (Análisis de palabras)",
+            "Sintaxis (Oración Simple y Compuesta)",
+            "Lit: Realismo y Naturalismo (s.XIX)",
+            "Lit: Generación del 98 y Modernismo",
+            "Lit: Novecentismo y Vanguardias (Gen 14)",
+            "Lit: Generación del 27",
+            "Lit: Teatro y Poesía tras 1936",
+            "Lit: Novela Española 1939-1975",
+            "Lit: Novela Española desde 1975",
+            "Lit: Literatura Hispanoamericana (Boom)"
+        ]
     },
     "Inglés": {
         "category": "skills",
-        "topics": ["Tenses Mix", "Passive Voice", "Reported Speech", "Conditionals", "Modals", "Relative Clauses", "Writing: Opinion", "Writing: For/Against"]
+        "topics": [
+            "Grammar: Tenses Mix & Passive Voice",
+            "Grammar: Reported Speech",
+            "Grammar: Conditionals & Wish Clauses",
+            "Grammar: Modals & Relative Clauses",
+            "Vocabulary: Connectors & Synonyms",
+            "Writing: Opinion Essay",
+            "Writing: For & Against Essay",
+            "Reading Comprehension Practice"
+        ]
     }
 }
 
@@ -73,40 +155,31 @@ DEFAULT_SYLLABUS = {
 # 3. GESTIÓN DE DATOS (CONECTADO A GOOGLE SHEETS)
 # ==========================================
 
-# Caché de la conexión para no reconectar en cada click
 @st.cache_resource
 def get_google_sheet():
     """Conecta con Google Sheets usando st.secrets"""
-    # Definir el alcance (scope)
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
-    
-    # Cargar credenciales desde los secretos de Streamlit
+    scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds_dict = dict(st.secrets["gcp_service_account"])
     creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
-    
-    # Autorizar cliente
     client = gspread.authorize(creds)
-    
-    # Abrir la hoja por URL
     sh = client.open_by_url(st.secrets["sheets"]["sheet_url"])
-    return sh.sheet1  # Devuelve la primera pestaña
+    return sh.sheet1 
 
 def create_defaults():
-    new_data = {}
+    new_data = {
+        "general_notes": [] # Estructura para notas manuales
+    }
     for subject, info in DEFAULT_SYLLABUS.items():
         new_data[subject] = []
         for topic in info["topics"]:
             new_data[subject].append({
                 "name": topic,
                 "category": info["category"],
-                "unlocked": False,       # True = Visto en clase
-                "level": 0,              # 0-5
+                "unlocked": False,       
+                "level": 0,              
                 "next_review": str(datetime.date.today()),
                 "last_error": "",
-                "extra_queue": False     # Urgencia manual
+                "extra_queue": False     
             })
     return new_data
 
@@ -114,13 +187,28 @@ def load_data():
     """Carga los datos desde la celda A1 de Google Sheets"""
     try:
         sheet = get_google_sheet()
-        # Leemos la celda A1
         raw_data = sheet.acell('A1').value
         
         if raw_data:
-            return json.loads(raw_data)
+            data = json.loads(raw_data)
+            # Asegurar compatibilidad si se añaden claves nuevas (como notas)
+            if "general_notes" not in data:
+                data["general_notes"] = []
+            
+            # Chequeo de integridad: Si hay nuevas asignaturas en el código que no están en la BD, añadirlas
+            for subj, info in DEFAULT_SYLLABUS.items():
+                if subj not in data:
+                    data[subj] = []
+                    for topic in info["topics"]:
+                        data[subj].append({
+                            "name": topic,
+                            "category": info["category"],
+                            "unlocked": False, "level": 0, 
+                            "next_review": str(datetime.date.today()), 
+                            "last_error": "", "extra_queue": False
+                        })
+            return data
         else:
-            # Si la celda está vacía, creamos defaults y los guardamos
             defaults = create_defaults()
             save_data(defaults)
             return defaults
@@ -133,7 +221,6 @@ def save_data(data):
     try:
         sheet = get_google_sheet()
         json_str = json.dumps(data)
-        # Escribimos todo el JSON en la celda A1
         sheet.update_acell('A1', json_str)
     except Exception as e:
         st.error(f"Error guardando datos: {e}")
@@ -143,12 +230,7 @@ def save_data(data):
 # ==========================================
 
 def show_modern_clock(target_hour_float):
-    """
-    Reloj fiable para Streamlit usando components_html (JS siempre se ejecuta).
-    Usa fuentes del sistema para evitar problemas con Google Fonts.
-    """
-    if not target_hour_float:
-        return
+    if not target_hour_float: return
 
     th = int(target_hour_float)
     tm = int(round((target_hour_float - th) * 60))
@@ -160,45 +242,16 @@ def show_modern_clock(target_hour_float):
       <div id="{uid}" class="clock-time">--:--:--</div>
       <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
     </div>
-
     <style>
-      /* Fuente del sistema: evita "letra rara" si no carga Google Fonts */
-      .clock-box {{
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-        background-color: #11141c;
-        border: 2px solid #ff4b4b;
-        border-radius: 14px;
-        padding: 14px;
-        text-align: center;
-        box-sizing: border-box;
-        width: 100%;
-      }}
-      .clock-label {{
-        color: #cfcfcf;
-        font-size: 0.75rem;
-        margin-bottom: 6px;
-        letter-spacing: 1px;
-      }}
-      .clock-time {{
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #ff4b4b;
-        text-shadow: 0 0 8px rgba(255,75,75,0.35);
-        line-height: 1;
-      }}
-      .clock-target {{
-        color: #9a9a9a;
-        margin-top: 6px;
-        font-size: 0.9rem;
-      }}
+      .clock-box {{ font-family: system-ui, sans-serif; background-color: #11141c; border: 2px solid #ff4b4b; border-radius: 14px; padding: 14px; text-align: center; width: 100%; }}
+      .clock-label {{ color: #cfcfcf; font-size: 0.75rem; margin-bottom: 6px; letter-spacing: 1px; }}
+      .clock-time {{ font-size: 2.2rem; font-weight: 700; color: #ff4b4b; line-height: 1; }}
+      .clock-target {{ color: #9a9a9a; margin-top: 6px; font-size: 0.9rem; }}
     </style>
-
     <script>
     (function(){{
       const elId = "{uid}";
-
       function pad(n) {{ return n < 10 ? "0" + n : n; }}
-
       function updateOnce() {{
         const el = document.getElementById(elId);
         if(!el) return false;
@@ -206,281 +259,194 @@ def show_modern_clock(target_hour_float):
         const target = new Date();
         target.setHours({th}, {tm}, 0, 0);
         let diff = target - now;
-        if (diff <= 0) {{
-          el.innerText = "00:00:00";
-          return true;
-        }}
+        if (diff <= 0) {{ el.innerText = "00:00:00"; return true; }}
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
         el.innerText = pad(h) + ":" + pad(m) + ":" + pad(s);
         return true;
       }}
-
-      // Esperamos al elemento (reintentos cortos). Cuando exista, arrancamos intervalo.
       let tries = 0;
       const waiter = setInterval(function() {{
         const ok = updateOnce();
-        tries += 1;
-        if (ok || tries > 80) {{
-          clearInterval(waiter);
-          if (ok) {{
-            // Si el elemento ya existía y se actualizó, programamos la actualización cada segundo.
-            setInterval(updateOnce, 1000);
-          }}
-        }}
+        tries++;
+        if (ok || tries > 80) {{ clearInterval(waiter); if (ok) setInterval(updateOnce, 1000); }}
       }}, 50);
     }})();
     </script>
     """
-
-    # Height ajustable: sube si necesitas más espacio visual
     components_html(html, height=140, scrolling=False)
 
 # ==========================================
-# 5. LÓGICA DE HORARIO (CORREGIDA & UPDATED)
+# 5. LÓGICA DE HORARIO
 # ==========================================
 
 def get_current_block():
-    """
-    Define qué toca estudiar según el día y la hora.
-    Basado estrictamente en las tablas del PDF.
-    Devuelve: tipo, nombre, duración, hora_fin (decimal)
-    """
-    
-    # --- CORRECCIÓN ZONA HORARIA ---
     madrid_tz = pytz.timezone('Europe/Madrid')
     now = datetime.datetime.now(madrid_tz) 
-    # -------------------------------
-
-    weekday = now.weekday() # 0=Lunes ... 6=Domingo
+    weekday = now.weekday() 
     hour = now.hour + now.minute / 60.0
 
-    # MIÉRCOLES (2)
-    if weekday in [2]:
+    # Miércoles (Día específico según tus notas)
+    if weekday in [2]: 
         if 16.0 <= hour < 17.5: return "science", "🔄 Tareas diarias", 90, 17.5
         if 17.5 <= hour < 19.0: return "gym", "🏋️ Gimnasio / Reset", 90, 19.0
         if 19.0 <= hour < 20.5: return "science", "🧪 Bloque Ciencia", 90, 20.5
         if 20.5 <= hour < 21.0: return "break", "🚿 Ducha", 30, 21.0
-        if 21.0 <= hour < 21.5: return "break", "🥗 Cena (Sin Pantallas)", 30, 21.5
+        if 21.0 <= hour < 21.5: return "break", "🥗 Cena", 30, 21.5
         if 21.5 <= hour < 23.0: return "memory", "🧠 Bloque Memoria (Gold)", 90, 23.0
-        if hour > 23.0: return "sleep", "😴 DORMIR (Sagrado)", 0, 0
+        if hour > 23.0: return "sleep", "😴 DORMIR", 0, 0
 
-    # LUNES (0), MARTES (1) Y JUEVES (3) 
-    elif weekday in [0, 1, 3]:
-        # ¡OJO! Aquí es donde estaba tu problema. Martes empieza 15:30.
+    # Lunes, Martes, Jueves
+    elif weekday in [0, 1, 3]: 
         if 15.5 <= hour < 17.0: return "science", "🔄 Tareas diarias", 90, 17.0
         if 17.0 <= hour < 18.5: return "gym", "🏋️ Gimnasio / Reset", 90, 18.5
         if 18.5 <= hour < 20.0: return "science", "🧪 Bloque Ciencia", 90, 20.0
-        if 20.0 <= hour < 20.5: return "mix", "Buffer / Inglés/ Tareas diarias", 30, 20.5
+        if 20.0 <= hour < 20.5: return "mix", "Buffer / Inglés", 30, 20.5
         if 20.5 <= hour < 21.0: return "break", "Ducha", 30, 21.0
         if 21.0 <= hour < 21.5: return "break", "🥗 Cena", 30, 21.5
         if 21.5 <= hour < 23.0: return "memory", "🧠 Bloque Memoria (Gold)", 90, 23.0
-        if hour >= 23.0: return "sleep", "😴 DORMIR (Sagrado)", 0, 0
+        if hour >= 23.0: return "sleep", "😴 DORMIR", 0, 0
 
-    # VIERNES (4) - Buffer y Repaso
-    elif weekday == 4:
-        if 16.0 <= hour < 20.0: return "mix", "🔄 Repaso Buffer/ Tareas / Inglés", 240, 20.0
+    # Viernes
+    elif weekday == 4: 
+        if 16.0 <= hour < 20.0: return "mix", "🔄 Repaso Buffer / Inglés", 240, 20.0
     
-    # SÁBADO (5) - Simulacro
-    elif weekday == 5:
-        if 9.5 <= hour < 13.5: return "simulacro", "📝 SIMULACRO REAL EXAMEN", 240, 13.5
-        if hour >= 14.0: return "free", "🎉 Tarde Libre", 0, 0
+    # Sábado
+    elif weekday == 5: 
+        if 9.5 <= hour < 13.5: return "simulacro", "📝 SIMULACRO REAL", 240, 13.5
     
-    # DOMINGO (6) - Planificación
-    elif weekday == 6:
-        if 18.0 <= hour < 20.0: return "review", "📅 Planificación + Cuaderno Errores", 120, 20.0
+    # Domingo
+    elif weekday == 6: 
+        if 18.0 <= hour < 20.0: return "review", "📅 Planificación + Errores", 120, 20.0
 
-    return "free", "⏳ Tiempo Libre / Buffer", 0, 0
+    return "free", "⏳ Tiempo Libre", 0, 0
 
 # ==========================================
-# 6. INTERFAZ Y LÓGICA PRINCIPAL
+# 6. INTERFAZ PRINCIPAL
 # ==========================================
 
-# Cargar estado
 if 'data' not in st.session_state:
     st.session_state.data = load_data()
 
 data = st.session_state.data
-# Recuperamos los 4 valores (incluyendo la hora de fin para el reloj)
 real_type, block_name, duration, end_hour = get_current_block()
 
-# --- SIDEBAR ---
 with st.sidebar:
     st.title("PAU TRACKER")
-    
-    # RELOJ MODERNO INTEGRADO
     show_modern_clock(end_hour)
-    
     st.markdown("### Estado Actual")
-    
-    # Checkbox para saltarse el descanso si es necesario
-    force_study = st.checkbox("🔥 MODO INTENSO (Ignorar Descansos)", value=False)
-    
-    # Muestra el bloque actual
+    force_study = st.checkbox("🔥 MODO INTENSO", value=False)
     st.info(f"**{block_name}**")
-    if duration > 0:
-        st.metric("Tiempo Bloque", f"{duration} min")
-    else:
-        st.caption("Fuera de horario lectivo.")
-        
-    st.divider()
+    if duration > 0: st.metric("Tiempo Bloque", f"{duration} min")
     
-    # Estadísticas rápidas
-    total_unlocked = sum(1 for s in data for t in data[s] if t["unlocked"])
+    st.divider()
+    # Cálculo estadísticas
+    total_unlocked = 0
+    for subj in data:
+        if subj == "general_notes": continue
+        total_unlocked += sum(1 for t in data[subj] if t.get("unlocked"))
     st.write(f"📈 Temas activos: **{total_unlocked}**")
 
-# --- PESTAÑAS PRINCIPALES ---
-tab1, tab2, tab3, tab4 = st.tabs(["🚀 Agenda", "📚 Temario", "📓 Errores", "⚙️ Ajustes"])
+tab1, tab2, tab3, tab4 = st.tabs(["🚀 Agenda", "📚 Temario", "📓 Notas y Errores", "⚙️ Ajustes"])
 
 # ==========================================
-# TAB 1: AGENDA INTELIGENTE (TIME BOXING)
+# TAB 1: AGENDA INTELIGENTE
 # ==========================================
 with tab1:
     st.header(f"Plan de Acción: {block_name}")
     
-    # Lógica de tipo de bloque
-    if force_study and real_type in ["gym", "break", "free", "sleep"]:
-        target_type = "mix" # Si forzamos estudio en descanso, mostramos mezcla
-        st.warning("⚠️ Saltándose la recuperación. Úsalo con cuidado.")
-    else:
-        target_type = real_type
+    if force_study and real_type in ["gym", "break", "free", "sleep"]: target_type = "mix"
+    else: target_type = real_type
 
-    # Si es hora de descanso/gym y NO estamos forzando estudio
     if target_type in ["gym", "break", "sleep", "free"]:
-        st.success(f"🛑 **STOP.** Toca recuperar energía.")
-        st.markdown(f"### Actividad: {block_name}")
-        st.markdown("> *El descanso es parte del entrenamiento. Desconecta para rendir luego.*")
-    
+        st.success(f"🛑 **STOP.** Descansa. El cerebro consolida lo estudiado ahora.")
     elif target_type == "review":
-        st.info("📅 **Domingo:** Revisa la pestaña '📓 Errores' y planifica la semana.")
-
+        st.info("📅 **Domingo:** Ve a la pestaña '📓 Notas y Errores' y organiza la semana.")
     else:
-        # 1. FILTRADO DE TAREAS
         tasks = []
         today_date = datetime.date.today()
-        today_str = str(today_date)
         
         for subj, topic_list in data.items():
+            if subj == "general_notes": continue # Ignorar notas generales aquí
             for i, topic in enumerate(topic_list):
-                # A. ¿Está activo y 'caducado' o marcado urgente?
-                is_due = (topic["next_review"] <= today_str) or topic["extra_queue"]
+                is_due = (topic["next_review"] <= str(today_date)) or topic["extra_queue"]
                 
-                # B. ¿Encaja en el bloque actual? (Ciencia vs Memoria)
+                # Filtrado inteligente por bloque horario
                 match_category = False
-                if target_type in ["simulacro", "mix"]: 
-                    match_category = True
-                elif target_type == "science" and (topic["category"] in ["science", "skills"]): 
-                    match_category = True # Inglés se puede meter en huecos de ciencia
-                elif target_type == "memory" and topic["category"] == "memory": 
-                    match_category = True
+                if target_type in ["simulacro", "mix"]: match_category = True
+                elif target_type == "science" and (topic["category"] in ["science", "skills"]): match_category = True
+                elif target_type == "memory" and topic["category"] == "memory": match_category = True
                 
                 if topic["unlocked"] and is_due and match_category:
-                    # Calcular días de retraso para priorizar
                     due_date = datetime.datetime.strptime(topic["next_review"], "%Y-%m-%d").date()
                     days_overdue = (today_date - due_date).days
-                    
-                    tasks.append({
-                        "subj": subj, 
-                        "topic": topic, 
-                        "idx": i,
-                        "days_overdue": days_overdue
-                    })
+                    tasks.append({"subj": subj, "topic": topic, "idx": i, "days_overdue": days_overdue})
 
-        # 2. ORDENACIÓN INTELIGENTE
-        # Prioridad: 1. Urgente Manual (Fuego) -> 2. Más retraso -> 3. Más difícil (Nivel bajo)
+        # Algoritmo de Prioridad: 1. Fuego manual, 2. Retraso, 3. Nivel (más difícil primero)
         tasks.sort(key=lambda x: (not x["topic"]["extra_queue"], -x["days_overdue"], x["topic"]["level"]))
-
-        # 3. TIME BOXING (SOLUCIÓN A LAS 19 TAREAS)
-        # Calculamos cuántas tareas caben REALMENTE en el tiempo disponible
-        if duration > 0:
-            max_tasks_fit = int(duration / MIN_MINUTES_PER_TASK) # Ej: 90 / 25 = 3 tareas
-            if max_tasks_fit < 1: max_tasks_fit = 1
+        max_tasks = int(duration / MIN_MINUTES_PER_TASK) if duration > 0 else 5
+        if max_tasks < 1: max_tasks = 1
+        
+        selected = tasks[:max_tasks]
+        
+        if not selected:
+            st.success("✅ **¡Al día!** No tienes repasos pendientes. Avanza materia en 'Temario'.")
         else:
-            max_tasks_fit = 5 # Default si no hay tiempo definido
-
-        total_pending = len(tasks)
-        selected_tasks = tasks[:max_tasks_fit] # CORTAMOS LA LISTA
-        hidden_tasks = total_pending - len(selected_tasks)
-
-        # 4. VISUALIZACIÓN
-        if not selected_tasks:
-            st.success("✅ **¡Todo limpio!** No tienes tareas pendientes para este bloque.")
-            st.markdown("Aprovecha para adelantar materia nueva en la pestaña **Temario**.")
-        else:
-            # Calcular tiempo real por tarea seleccionada
-            real_time_per_task = int(duration / len(selected_tasks)) if duration > 0 else 30
-            
-            # Métricas
+            time_per = int(duration / len(selected)) if duration > 0 else 30
             c1, c2, c3 = st.columns(3)
-            c1.metric("Objetivo Hoy", f"{len(selected_tasks)} Tareas", help="Tareas seleccionadas por prioridad")
-            c2.metric("Tiempo / Tarea", f"{real_time_per_task} min", help="Tiempo enfocado por tema")
-            c3.metric("Backlog", f"+{hidden_tasks}", delta_color="off", help="Tareas pendientes ocultas por falta de tiempo")
-
-            st.progress(0, text="Progreso de la sesión")
+            c1.metric("Tareas Hoy", f"{len(selected)}")
+            c2.metric("Min/Tarea", f"{time_per} min")
+            c3.metric("Pendientes", f"+{len(tasks) - len(selected)}")
+            
             st.divider()
 
-            for t in selected_tasks:
+            for t in selected:
                 subj = t["subj"]
                 idx = t["idx"]
                 topic = t["topic"]
                 
-                # Renderizar Tarjeta
                 with st.container(border=True):
                     col_det, col_acc = st.columns([0.7, 0.3])
-                    
                     with col_det:
-                        # Etiquetas
                         badges = []
                         if topic["extra_queue"]: badges.append("🔥 URGENTE")
                         if t["days_overdue"] > 5: badges.append("💀 RETRASADO")
-                        if topic["level"] < 2: badges.append("🐸 DIFÍCIL") # Eat the frog
-                        
                         st.caption(f"{' '.join(badges)} • {subj}")
                         st.subheader(topic["name"])
-                        st.write(f"Dominio: {topic['level']}/5")
                         st.progress(topic['level']/5)
-                        
-                        if topic["last_error"]:
-                            st.error(f"⚠️ Ojo al fallo anterior: {topic['last_error']}")
-
+                        if topic["last_error"]: st.error(f"⚠️ Fallo previo: {topic['last_error']}")
+                    
                     with col_acc:
                         st.write("**Evaluación**")
                         b1, b2, b3 = st.columns(3)
-                        
-                        # Botones de Algoritmo (Spaced Repetition)
-                        if b1.button("✅", key=f"ok_{subj}_{idx}", help="Bien (+Nivel)"):
+                        # Botones Repaso Espaciado
+                        if b1.button("✅", key=f"ok_{subj}_{idx}"):
                             topic["level"] = min(topic["level"] + 1, 5)
                             days = (topic["level"] * 5) + 3 
                             topic["next_review"] = str(datetime.date.today() + datetime.timedelta(days=days))
                             topic["extra_queue"] = False
                             save_data(st.session_state.data)
                             st.rerun()
-
-                        if b2.button("🆗", key=f"mid_{subj}_{idx}", help="Normal (Repetir pronto)"):
-                            days = 3
-                            topic["next_review"] = str(datetime.date.today() + datetime.timedelta(days=days))
+                        if b2.button("🆗", key=f"mid_{subj}_{idx}"):
+                            topic["next_review"] = str(datetime.date.today() + datetime.timedelta(days=3))
                             topic["extra_queue"] = False
                             save_data(st.session_state.data)
                             st.rerun()
-                        
-                        if b3.button("❌", key=f"bad_{subj}_{idx}", help="Mal (Reiniciar)"):
+                        if b3.button("❌", key=f"bad_{subj}_{idx}"):
                             st.session_state[f"fail_{subj}_{idx}"] = True
                             topic["level"] = 1
                             topic["next_review"] = str(datetime.date.today() + datetime.timedelta(days=1))
                             save_data(st.session_state.data)
                             st.rerun()
                     
-                    # Si falló, pedir detalle para el Cuaderno de Errores
                     if st.session_state.get(f"fail_{subj}_{idx}", False):
                         with st.form(key=f"frm_{subj}_{idx}"):
-                            st.markdown("📉 **Registro de Fallo**")
-                            err_txt = st.text_input("¿Qué falló exactamente? (Cálculo, concepto, olvido...)")
-                            if st.form_submit_button("Guardar en Cuaderno de Errores"):
+                            err_txt = st.text_input("¿Motivo del fallo? (Se guardará en Errores)")
+                            if st.form_submit_button("Guardar"):
                                 topic["last_error"] = err_txt
                                 del st.session_state[f"fail_{subj}_{idx}"]
                                 save_data(st.session_state.data)
-                                st.success("Guardado.")
                                 st.rerun()
 
 # ==========================================
@@ -488,44 +454,36 @@ with tab1:
 # ==========================================
 with tab2:
     st.header("📚 Temario (Syllabus)")
-    st.info("Marca las casillas ✅ cuando des un tema en clase para activarlo en el algoritmo.")
-    
-    col_search, _ = st.columns([0.8, 0.2])
-    query = col_search.text_input("🔍 Buscar tema...")
+    st.info("Activa (✅) los temas vistos en clase para que entren en la rotación.")
+    query = st.text_input("🔍 Buscar tema...")
 
     for subj in data:
-        with st.expander(f"**{subj}**"):
-            # Input añadir tema manual
-            c_input, c_btn = st.columns([0.8, 0.2])
-            new_top = c_input.text_input(f"Añadir tema a {subj}", key=f"new_{subj}")
-            if c_btn.button("➕", key=f"add_{subj}") and new_top:
+        if subj == "general_notes": continue
+        with st.expander(f"**{subj}** ({len([x for x in data[subj] if x['unlocked']])}/{len(data[subj])})"):
+            # Opción añadir manual
+            c_in, c_bt = st.columns([0.8, 0.2])
+            new_t = c_in.text_input(f"Nuevo tema en {subj}", key=f"new_{subj}")
+            if c_bt.button("➕", key=f"add_{subj}") and new_t:
                 data[subj].append({
-                    "name": new_top, "category": data[subj][0]["category"], 
+                    "name": new_t, "category": data[subj][0]["category"], 
                     "unlocked": True, "level": 0, "next_review": str(datetime.date.today()), 
                     "last_error": "", "extra_queue": True
                 })
                 save_data(data)
                 st.rerun()
             
-            st.divider()
-            
-            # Lista de temas
+            st.markdown("---")
             for i, topic in enumerate(data[subj]):
                 if query.lower() in topic["name"].lower():
                     cols = st.columns([0.1, 0.6, 0.2, 0.1])
-                    
-                    # Checkbox desbloqueo
                     act = cols[0].checkbox("", value=topic["unlocked"], key=f"chk_{subj}_{i}")
                     if act != topic["unlocked"]:
                         topic["unlocked"] = act
                         if act: topic["next_review"] = str(datetime.date.today())
                         save_data(data)
                         st.rerun()
-                    
                     cols[1].write(topic["name"])
                     cols[2].caption(f"Nv. {topic['level']}")
-                    
-                    # Toggle Fuego (Urgencia)
                     urg = cols[3].toggle("🔥", value=topic["extra_queue"], key=f"urg_{subj}_{i}")
                     if urg != topic["extra_queue"]:
                         topic["extra_queue"] = urg
@@ -533,58 +491,86 @@ with tab2:
                         st.rerun()
 
 # ==========================================
-# TAB 3: CUADERNO DE ERRORES
+# TAB 3: NOTAS Y ERRORES (MODIFICADO)
 # ==========================================
 with tab3:
-    st.header("📓 Cuaderno de Errores")
-    st.markdown("Los domingos, repasa esta lista. Si entiendes el error y sabes solucionarlo, bórralo.")
+    st.header("📓 Notas y Errores")
     
+    # --- SECCIÓN 1: AGENDA / NOTAS LIBRES ---
+    st.subheader("📝 Agenda & Notas Rápidas")
+    
+    with st.container(border=True):
+        # Input para nueva nota
+        c_note, c_add = st.columns([0.85, 0.15])
+        new_general_note = c_note.text_input("Escribe una nota, tarea o recordatorio...", key="input_new_note")
+        if c_add.button("Añadir", key="btn_add_note") and new_general_note:
+            data["general_notes"].insert(0, {"text": new_general_note, "date": str(datetime.date.today())})
+            save_data(data)
+            st.rerun()
+        
+        # Listado de notas
+        if not data["general_notes"]:
+            st.caption("No hay notas guardadas.")
+        else:
+            for i, note in enumerate(data["general_notes"]):
+                cn1, cn2 = st.columns([0.9, 0.1])
+                cn1.markdown(f"• {note['text']} <span style='color:grey; font-size:0.8em'>({note['date']})</span>", unsafe_allow_html=True)
+                if cn2.button("🗑️", key=f"del_note_{i}"):
+                    data["general_notes"].pop(i)
+                    save_data(data)
+                    st.rerun()
+
+    st.divider()
+
+    # --- SECCIÓN 2: CUADERNO DE ERRORES AUTOMÁTICO ---
+    st.subheader("📉 Registro de Fallos (Algoritmo)")
+    st.markdown("Errores detectados al estudiar. Elimínalos cuando los hayas superado.")
+
     has_errors = False
     for subj, topic_list in data.items():
-        err_topics = [t for t in topic_list if t["last_error"]]
+        if subj == "general_notes": continue
+        err_topics = [t for t in topic_list if t.get("last_error")]
         if err_topics:
             has_errors = True
-            st.subheader(subj)
+            st.markdown(f"**{subj}**")
             for t in err_topics:
                 with st.container(border=True):
-                    c1, c2 = st.columns([0.85, 0.15])
-                    with c1:
-                        st.markdown(f"**{t['name']}**")
+                    ce1, ce2 = st.columns([0.85, 0.15])
+                    with ce1:
+                        st.write(f"**{t['name']}**")
                         st.error(f"❌ {t['last_error']}")
-                    with c2:
-                        if st.button("🗑️", key=f"del_err_{t['name']}", help="Borrar error (Superado)"):
+                    with ce2:
+                        if st.button("Superado", key=f"fix_{t['name']}"):
                             t["last_error"] = ""
                             save_data(data)
                             st.rerun()
     
     if not has_errors:
-        st.success("¡Cuaderno limpio! Buen trabajo.")
+        st.success("¡Excelente! No hay errores pendientes de repaso en el temario.")
 
 # ==========================================
-# TAB 4: CONFIGURACIÓN
+# TAB 4: AJUSTES
 # ==========================================
 with tab4:
-    st.header("⚙️ Configuración")
-    
+    st.header("⚙️ Ajustes")
     with st.expander("Gestionar Asignaturas"):
-        n_subj = st.text_input("Nueva Asignatura")
-        n_cat = st.selectbox("Categoría", ["science", "memory", "skills"])
-        if st.button("Crear Asignatura"):
-            if n_subj and n_subj not in data:
-                data[n_subj] = [{"name": "Tema 1", "category": n_cat, "unlocked": True, "level": 0, "next_review": str(datetime.date.today()), "last_error": "", "extra_queue": False}]
+        ns = st.text_input("Nombre Asignatura")
+        nc = st.selectbox("Tipo", ["science", "memory", "skills"])
+        if st.button("Crear"):
+            if ns and ns not in data:
+                data[ns] = [{"name": "Tema 1", "category": nc, "unlocked": True, "level": 0, "next_review": str(datetime.date.today()), "last_error": "", "extra_queue": False}]
                 save_data(data)
                 st.rerun()
-                
+        
         st.divider()
-        d_subj = st.selectbox("Borrar Asignatura", list(data.keys()))
-        if st.button("🗑️ Eliminar Asignatura"):
-            del data[d_subj]
+        ds = st.selectbox("Eliminar", [k for k in data.keys() if k != "general_notes"])
+        if st.button("Eliminar Asignatura"):
+            del data[ds]
             save_data(data)
             st.rerun()
 
     st.markdown("---")
-    if st.button("☠️ RESET TOTAL (Borrar todos los datos)"):
-        # En versión nube, reseteamos a defaults y sobrescribimos la celda
+    if st.button("☠️ RESET DE FÁBRICA (Borrar todo)"):
         new_defaults = create_defaults()
         save_data(new_defaults)
         st.session_state.data = new_defaults
