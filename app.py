@@ -230,6 +230,10 @@ def save_data(data):
 # ==========================================
 
 def show_modern_clock(target_hour_float):
+    """
+    Reloj renderizado en HTML/JS para evitar desconexiones, 
+    con estilo ajustado para que no se corte el borde.
+    """
     if not target_hour_float: return
 
     th = int(target_hour_float)
@@ -237,45 +241,107 @@ def show_modern_clock(target_hour_float):
     uid = f"clock_{int(time.time()*1000)}"
 
     html = f"""
-    <div class="clock-box" id="{uid}_wrap">
-      <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
-      <div id="{uid}" class="clock-time">--:--:--</div>
-      <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
+    <div class="clock-container">
+        <div class="clock-box" id="{uid}_wrap">
+          <div class="clock-label">TIEMPO RESTANTE DE BLOQUE</div>
+          <div id="{uid}" class="clock-time">--:--:--</div>
+          <div class="clock-target">Objetivo: {th:02d}:{tm:02d}</div>
+        </div>
     </div>
+
     <style>
-      .clock-box {{ font-family: system-ui, sans-serif; background-color: #11141c; border: 2px solid #ff4b4b; border-radius: 14px; padding: 14px; text-align: center; width: 100%; }}
-      .clock-label {{ color: #cfcfcf; font-size: 0.75rem; margin-bottom: 6px; letter-spacing: 1px; }}
-      .clock-time {{ font-size: 2.2rem; font-weight: 700; color: #ff4b4b; line-height: 1; }}
-      .clock-target {{ color: #9a9a9a; margin-top: 6px; font-size: 0.9rem; }}
+      /* Reset básico para evitar márgenes extraños */
+      body {{ margin: 0; padding: 0; box-sizing: border-box; }}
+      
+      .clock-container {{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px; /* Un poco de margen interno para el borde */
+        font-family: system-ui, -apple-system, sans-serif;
+      }}
+
+      .clock-box {{
+        background-color: #11141c;
+        border: 2px solid #ff4b4b;
+        border-radius: 12px;
+        padding: 15px 10px;
+        text-align: center;
+        width: 100%;
+        max-width: 350px; /* Evita que se estire demasiado en pantallas grandes */
+        box-sizing: border-box; /* CRUCIAL: Para que el padding no rompa el ancho */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      }}
+
+      .clock-label {{ 
+        color: #cfcfcf; 
+        font-size: 0.7rem; 
+        text-transform: uppercase; 
+        letter-spacing: 1.5px; 
+        margin-bottom: 5px;
+      }}
+
+      .clock-time {{ 
+        font-size: 2.5rem; 
+        font-weight: 700; 
+        color: #ff4b4b; 
+        line-height: 1.1; 
+        margin: 5px 0;
+        text-shadow: 0 0 10px rgba(255, 75, 75, 0.2);
+      }}
+
+      .clock-target {{ 
+        color: #888; 
+        font-size: 0.85rem; 
+        margin-top: 5px;
+      }}
     </style>
+
     <script>
     (function(){{
       const elId = "{uid}";
       function pad(n) {{ return n < 10 ? "0" + n : n; }}
+      
       function updateOnce() {{
         const el = document.getElementById(elId);
         if(!el) return false;
+        
         const now = new Date();
         const target = new Date();
         target.setHours({th}, {tm}, 0, 0);
+        
         let diff = target - now;
-        if (diff <= 0) {{ el.innerText = "00:00:00"; return true; }}
+        
+        // Si ya pasó la hora, mostrar 00:00:00
+        if (diff <= 0) {{ 
+            el.innerText = "00:00:00"; 
+            return true; 
+        }}
+        
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
+        
         el.innerText = pad(h) + ":" + pad(m) + ":" + pad(s);
         return true;
       }}
+
+      // Lógica de reintento para asegurar que el elemento existe antes de iniciar
       let tries = 0;
       const waiter = setInterval(function() {{
         const ok = updateOnce();
         tries++;
-        if (ok || tries > 80) {{ clearInterval(waiter); if (ok) setInterval(updateOnce, 1000); }}
-      }}, 50);
+        if (ok || tries > 50) {{ 
+            clearInterval(waiter); 
+            if (ok) setInterval(updateOnce, 1000); 
+        }}
+      }}, 100);
     }})();
     </script>
     """
-    components_html(html, height=140, scrolling=False)
+    
+    # Aumentamos el height a 160 para dar espacio al borde y la sombra sin que se corte
+    components_html(html, height=160, scrolling=False)
 
 # ==========================================
 # 5. LÓGICA DE HORARIO
