@@ -516,18 +516,17 @@ with tab1:
                                 st.rerun()
 
 # ==========================================
-# TAB 2: GESTIÓN DE TEMARIO (BLINDADO)
+# TAB 2: GESTIÓN DE TEMARIO (CORREGIDO)
 # ==========================================
 with tab2:
     st.header("📚 Temario (Syllabus)")
     st.info("Activa (✅) los temas vistos en clase para que entren en la rotación.")
     query = st.text_input("🔍 Buscar tema...")
 
-    # Iteramos sobre una copia de las claves para evitar errores de modificación durante iteración
+    # Iteramos sobre una copia de las claves para seguridad
     for subj in list(data.keys()):
         if subj == "general_notes": continue
         
-        # --- BLOQUE DE SEGURIDAD START ---
         try:
             # 1. Validación de estructura
             topic_list = data[subj]
@@ -535,25 +534,26 @@ with tab2:
                 st.error(f"⚠️ Datos corruptos en: {subj}")
                 continue 
 
-            # 2. Cálculos seguros
+            # 2. Cálculos
             count_active = sum(1 for x in topic_list if isinstance(x, dict) and x.get('unlocked'))
             count_total = len(topic_list)
             
-            # 3. Forzar conversión a String para evitar TypeError en Python 3.13
+            # 3. Etiqueta del expander (String forzado)
             label_expander = str(f"**{subj}** ({count_active}/{count_total})")
             
-            # 4. Generar una key segura (sin espacios ni caracteres raros)
-            safe_key = f"exp_{str(subj).strip().replace(' ', '_')}"
+            # 4. Generamos una clave única para LOS ELEMENTOS DE DENTRO, no para el expander
+            safe_key = f"k_{str(subj).strip().replace(' ', '_')}"
 
-            # 5. Expander
-            with st.expander(label_expander, key=safe_key):
+            # --- CORRECCIÓN AQUÍ: Quitamos 'key=' del expander ---
+            with st.expander(label_expander):
                 
                 # Input Añadir Tema
                 c_in, c_bt = st.columns([0.8, 0.2])
+                # Usamos safe_key aquí para que el input sea único
                 new_t = c_in.text_input(f"Nuevo tema en {subj}", key=f"new_{safe_key}")
                 
                 if c_bt.button("➕", key=f"add_{safe_key}") and new_t:
-                    # Determinar categoría por defecto
+                    # Determinar categoría
                     if not topic_list:
                         new_category = DEFAULT_SYLLABUS.get(subj, {}).get("category", "memory")
                     else:
@@ -575,7 +575,6 @@ with tab2:
                 
                 # Listado de temas
                 for i, topic in enumerate(topic_list):
-                    # Validación extra por si el topic no es diccionario
                     if not isinstance(topic, dict): continue
 
                     if query.lower() in topic.get("name", "").lower():
@@ -604,10 +603,8 @@ with tab2:
                             st.rerun()
 
         except Exception as e:
-            st.error(f"Error al renderizar la asignatura '{subj}': {e}")
-            # Esto permite que el resto de la app cargue aunque una asignatura falle
+            st.error(f"Error interno en '{subj}': {e}")
             continue
-        # --- BLOQUE DE SEGURIDAD END ---
                         
 # ==========================================
 # TAB 3: NOTAS Y ERRORES (MODIFICADO)
