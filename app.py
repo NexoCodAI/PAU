@@ -92,7 +92,7 @@ DEFAULT_SYLLABUS = {
             "Tema 1: La Prehistoria y la Edad Antigua en la Península Ibérica",
             "Tema 2: La Edad Media en la Península Ibérica",
             "Tema 3: La Edad Moderna",
-            "Tema 4: La crisis del AAntiguo Régimen (1788-1833)",
+            "Tema 4: La crisis del Antiguo Régimen (1788-1833)",
             "Tema 5: La construcción del Estado Liberal (1833-1874)",
             "Tema 6: El régimen de la Restauración (1874-1902)",
             "Tema 7: Transformaciones económicas y sociales del SXIX",
