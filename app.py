@@ -89,18 +89,21 @@ DEFAULT_SYLLABUS = {
     "Historia de España": {
         "category": "memory",
         "topics": [
-            "B1-B2: Raíces Históricas (Prehistoria - Edad Media)",
-            "B3: Edad Moderna (RRCC, América, Austrias)",
-            "B4: Crisis Antiguo Régimen (1788-1833)",
-            "B5: Estado Liberal (Isabel II y Sexenio)",
-            "B6: La Restauración (1874-1902)",
-            "B7: Transformaciones Económicas s.XIX",
-            "B8: Alfonso XIII y Crisis de la Restauración",
-            "B9: La Segunda República (1931-1936)",
-            "B10: La Guerra Civil (1936-1939)",
-            "B11: La Dictadura Franquista (1939-1975)",
-            "B12: La Transición (1975-1982)",
-            "B13: Democracia y Constitución 1978"
+            "Tema 1: La Prehistoria y la Edad Antigua en la Península Ibérica",
+            "Tema 2: La Edad Media en la Península Ibérica",
+            "Tema 3: La Edad Moderna",
+            "Tema 4: La crisis del AAntiguo Régimen (1788-1833)",
+            "Tema 5: La construcción del Estado Liberal (1833-1874)",
+            "Tema 6: El régimen de la Restauración (1874-1902)",
+            "Tema 7: Transformaciones económicas y sociales del SXIX",
+            "Tema 8: El reinado de Alfonso XIII (1902-1931)",
+            "Tema 9: La Segunda República (1931-1936)",
+            "Tema 10: La Guerra Civil (1936-1939)",
+            "Tema 11: La dictadura franquista (1939-1975)",
+            "Tema 12: La Transición (1975-1982)",
+            "Tema 13: La democracia (1982-2018)",
+            "Tema 14: España en Europa",
+            "Tema 15: España y el mundo",
         ]
     },
     "Historia de la Filosofía": {
@@ -126,6 +129,7 @@ DEFAULT_SYLLABUS = {
             "Semántica y Lexicología (Sinonimia, Campos semánticos)",
             "Morfología (Análisis de palabras)",
             "Sintaxis (Oración Simple y Compuesta)",
+            "Libros de Lectura",
             "Lit: Realismo y Naturalismo (s.XIX)",
             "Lit: Generación del 98 y Modernismo",
             "Lit: Novecentismo y Vanguardias (Gen 14)",
@@ -136,6 +140,24 @@ DEFAULT_SYLLABUS = {
             "Lit: Literatura Hispanoamericana (Boom)"
         ]
     },
+
+     "Tecnología e Ingeniería II": {
+        "category": "science",
+        "topics": [
+            "Circuitos Neumáticos e Hidráulicos",
+            "Máquinas Térmicas",
+            "Electrónica Digital",
+            "Proyectos de investigación y desarrollo",
+            "Sistemas de Control",
+            "Sistemas informáticos emergentes",
+            "Materiales - Ensayos",
+            "Materiales - Diagramas",
+            "Estructuras",
+            "Corriente Alterna",
+            "Diseño 2D y 3D"
+        ]
+    },
+    
     "Inglés": {
         "category": "skills",
         "topics": [
